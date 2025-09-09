@@ -48,7 +48,7 @@ const reports = [
 
 export const AppTable = () => {
   return (
-    <div className="bg-white rounded-xl border border-black overflow-hidden">
+    <div className="border rounded-xl">
       <Table>
         <TableHeader>
           <TableRow>

@@ -11,8 +11,8 @@ import {
 
 export const AppOcorrenciaChart = () => {
   return (
-    <div>
-      <Card className="@container/card bg-transparent border">
+    <div className="pt-4">
+      <Card className="@container/card bg-transparent border ">
         <CardHeader>
           <CardDescription>Ocorrências</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">

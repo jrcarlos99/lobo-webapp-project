@@ -14,9 +14,8 @@ export default function Home() {
           Hoje
         </span>
         <AppSelect />
-        <div className="bg-primary-foreground p-4 rounded-lg flex flex-col lg:col-span-1 xl:col-span-1 2xl:col-span-1">
-          <AppOcorrenciaChart />
-        </div>
+
+        <AppOcorrenciaChart />
       </div>
 
       <div className="bg-primary-foreground p-4 rounded-lg lg:col-span-3 xl:col-span-2 2xl:col-span-3">
@@ -27,7 +26,7 @@ export default function Home() {
         <ChartPieDonut />
       </div>
 
-      <div className="bg-primary-foreground p-4 rounded-lg lg:col-span-2 xl:col-span-1 2xl:col-span-2">
+      <div className="bg-primary-foreground p-4 border rounded-lg lg:col-span-2 xl:col-span-1 2xl:col-span-2 ">
         <AppBarChart />
       </div>
 
