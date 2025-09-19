@@ -1,7 +1,16 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import { LogOut, Moon, Settings, SquareMenu, Sun, User } from "lucide-react";
+import {
+  Bell,
+  LogOut,
+  Moon,
+  Settings,
+  SquareMenu,
+  Sun,
+  User,
+  User2,
+} from "lucide-react";
 import Link from "next/link";
 import {
   DropdownMenu,
@@ -13,7 +22,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "./ui/button";
 import { useTheme } from "next-themes";
-import { SidebarTrigger, useSidebar } from "./ui/sidebar";
+import {
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarTrigger,
+  useSidebar,
+} from "./ui/sidebar";
 
 export const Navbar = () => {
   const { setTheme } = useTheme();
@@ -25,61 +41,32 @@ export const Navbar = () => {
       {/* <Button variant={"outline"} onClick={toggleSidebar}>
         Custom button
       </Button> */}
+      {/* Área do usuário */}
+      <SidebarGroup className="border-b pb-4 mb-4">
+        <SidebarGroupContent>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <div className="flex flex-col px-2 py-0.5">
+                <div className="flex items-center gap-1 mb-1">
+                  <Avatar>
+                    <AvatarImage
+                      className="size-8 rounded-xl"
+                      src="https://avatars.githubusercontent.com/u/1486366"
+                      alt="@shadcn"
+                    />
+                    <AvatarFallback>CN</AvatarFallback>
+                  </Avatar>
+                </div>
+                <span className="font-semibold text-sm">João Carlos</span>
+                <span className="text-xs text-muted-foreground">Admin</span>
+              </div>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroupContent>
+      </SidebarGroup>
       {/* Right */}
       <div className="flex items-center gap-4">
-        <Link href="/">Dashboard</Link>
-        {/* Theme Menu  */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="icon">
-              <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-              <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-              <span className="sr-only">Toggle theme</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => setTheme("light")}>
-              Light
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setTheme("dark")}>
-              Dark
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setTheme("system")}>
-              System
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        {/* User Menu */}
-        <DropdownMenu>
-          <DropdownMenuTrigger>
-            {" "}
-            <Avatar>
-              <AvatarImage
-                className="size-8 rounded-xl"
-                src="https://avatars.githubusercontent.com/u/1486366"
-                alt="@shadcn"
-              />
-              <AvatarFallback>CN</AvatarFallback>
-            </Avatar>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent sideOffset={10}>
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <User className="h-[1.2rem] w-[1.2rem] mr-2" />
-              Profile
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Settings className="h-[1.2rem] w-[1.2rem] mr-2" />
-              Settings
-            </DropdownMenuItem>
-            <DropdownMenuItem variant="destructive">
-              <LogOut className="h-[1.2rem] w-[1.2rem] mr-2" />
-              Logout
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Bell />
       </div>
     </nav>
   );

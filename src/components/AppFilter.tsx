@@ -12,7 +12,7 @@ export const AppFilter = () => {
       <div className="flex flex-col sm:flex-row space-x-0 sm:space-x-4 xl:space-x-4 pt-4 gap-4">
         {/* Dropdown Período */}
         <Select>
-          <SelectTrigger className="font-inter bg-stone-50 w-full ]">
+          <SelectTrigger className="font-inter w-full ]">
             <SelectValue placeholder="Período" />
           </SelectTrigger>
           <SelectContent className="font-inter">

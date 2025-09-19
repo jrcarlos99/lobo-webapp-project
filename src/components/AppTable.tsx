@@ -52,19 +52,21 @@ export const AppTable = () => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="text-left">Título</TableHead>
-            <TableHead>Tipo</TableHead>
-            <TableHead>Região</TableHead>
-            <TableHead className="text-right">Status</TableHead>
+            <TableHead className="text-center">Título</TableHead>
+            <TableHead className="text-center">Tipo</TableHead>
+            <TableHead className="text-center">Região</TableHead>
+            <TableHead className="text-center">Status</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {reports.map((report, index) => (
             <TableRow key={index}>
-              <TableCell className="font-medium">{report.title}</TableCell>
-              <TableCell>{report.type}</TableCell>
-              <TableCell>{report.region}</TableCell>
-              <TableCell className="text-right">{report.region}</TableCell>
+              <TableCell className="font-medium text-center">
+                {report.title}
+              </TableCell>
+              <TableCell className="text-center">{report.type}</TableCell>
+              <TableCell className="text-center">{report.region}</TableCell>
+              <TableCell className="text-center">{report.region}</TableCell>
             </TableRow>
           ))}
         </TableBody>

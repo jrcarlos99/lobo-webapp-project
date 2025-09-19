@@ -1,13 +1,13 @@
 "use client";
 
 import {
-  ChevronUp,
   House,
   Settings,
   User2,
   FileText,
   User,
   Folder,
+  LogOut,
 } from "lucide-react";
 
 import { usePathname } from "next/navigation";
@@ -20,25 +20,18 @@ import {
   SidebarGroupContent,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSubButton,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import Image from "next/image";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // Menu items.
 const items = [
   {
     title: "Início",
-    url: "/",
+    url: "/dashboard",
     icon: House,
   },
   {
@@ -56,21 +49,17 @@ const items = [
     url: "/users",
     icon: User,
   },
-  {
-    title: "Settings",
-    url: "/configuracao",
-    icon: Settings,
-  },
 ];
 
 export const AppSidebar = () => {
   const pathname = usePathname();
+  const isMobile = useIsMobile();
   return (
-    <Sidebar collapsible="icon">
-      <SidebarHeader className="py-4">
+    <Sidebar collapsible={isMobile ? "icon" : "none"}>
+      <SidebarHeader className="flex items-center justify-center">
         <SidebarMenu>
           <Link href="/">
-            <Image src="/lobo.svg" alt="logo" width={70} height={20} />
+            <Image src="/lobo.svg" alt="logo" width={70} height={40} />
           </Link>
         </SidebarMenu>
       </SidebarHeader>
@@ -78,44 +67,51 @@ export const AppSidebar = () => {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="gap-3">
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === item.url}
+                    className="flex-col h-14 justify-center gap-0.5 px-2 py-1"
+                  >
                     <Link
                       href={item.url}
-                      className={
-                        pathname === item.url ? "bg-red-950 text-white" : ""
-                      }
+                      className="flex flex-col items-center"
                     >
-                      <item.icon />
-                      <span>{item.title}</span>
+                      <item.icon size={20} />
+                      <span className="text-xs">{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
-                  {item.title === "Inbox" && (
-                    <SidebarMenuBadge>24</SidebarMenuBadge>
-                  )}
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
-        <SidebarMenu>
+      <SidebarFooter className="pt-4 border-t">
+        <SidebarMenu className="gap-4">
+          {/* Botão de Settings */}
           <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuSubButton>
-                  <User2 /> João Carlos <ChevronUp className="ml-auto" />
-                </SidebarMenuSubButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem>Account</DropdownMenuItem>
-                <DropdownMenuItem>Setting</DropdownMenuItem>
-                <DropdownMenuItem>Sign out</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <SidebarMenuButton
+              asChild
+              className="flex-col h-16 justify-center gap-1 px-2 py-1"
+            >
+              <Link href="/configuracao" className="flex flex-col items-center">
+                <Settings size={20} />
+                <span className="text-xs">Settings</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+
+          {/* Botão de Sair */}
+          <SidebarMenuItem>
+            <SidebarMenuButton className="flex-col h-16 justify-center gap-1 px-2 py-1">
+              <div className="flex flex-col items-center">
+                <LogOut size={20} />
+                <span className="text-xs">Sair</span>
+              </div>
+            </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>

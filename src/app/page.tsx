@@ -1,38 +1,60 @@
-import { AppBarChart } from "@/components/AppBarChart";
-import { AppDatePicker } from "@/components/AppDatePicker";
-import { AppOcorrenciaChart } from "@/components/AppOcorrenciaChart";
-import { ChartPieLabel } from "@/components/AppPieChart";
-import { ChartPieDonut } from "@/components/AppPieChartDonut";
-import { AppSelect } from "@/components/AppSelect";
+"use client";
 
-export default function Home() {
+import * as React from "react";
+import Link from "next/link";
+
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+} from "@/components/ui/navigation-menu";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+
+export default function HeaderPage() {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
-      <div className="bg-primary-foreground p-4 rounded-lg ">
-        <AppDatePicker />
-        <span className="font-inter text-6xl flex pt-2 font-medium text-[var(--color-text)]">
-          Hoje
-        </span>
-        <AppSelect />
+    <nav className="flex items-center p-4 bg-background border-b border-border">
+      {/* Nav da Esquerda */}
+      <Image alt="LoboLogo" src="/lobo.svg" width={50} height={10} />
+      <div className="font-bold text-lg ">L.O.B.O</div>
 
-        <AppOcorrenciaChart />
+      {/* Conteúdo do Meio */}
+      <div className="flex-1 flex justify-center">
+        <NavigationMenu>
+          {/* Inicio */}
+          <NavigationMenuList>
+            <NavigationMenuItem>
+              <NavigationMenuLink asChild>
+                <Link href="/inicio">Início</Link>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+          </NavigationMenuList>
+
+          {/* Serviços */}
+          <NavigationMenuList>
+            <NavigationMenuItem>
+              <NavigationMenuLink asChild>
+                <Link href="/services">Serviços</Link>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+          </NavigationMenuList>
+
+          {/* Sobre Nós */}
+          <NavigationMenuList>
+            <NavigationMenuItem>
+              <NavigationMenuLink asChild>
+                <Link href="/about">Sobre Nós</Link>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+          </NavigationMenuList>
+        </NavigationMenu>
       </div>
 
-      <div className="bg-primary-foreground p-4 rounded-lg lg:col-span-3 xl:col-span-2 2xl:col-span-3">
-        MAPA
+      {/* Button Contato */}
+      <div className="flex justify-end rounded-full">
+        <Button variant={"destructive"}>Contato</Button>
       </div>
-
-      <div className="bg-primary-foreground p-4 rounded-lg">
-        <ChartPieDonut />
-      </div>
-
-      <div className="bg-primary-foreground p-4 border rounded-lg lg:col-span-2 xl:col-span-1 2xl:col-span-2 ">
-        <AppBarChart />
-      </div>
-
-      <div className="bg-primary-foreground p-4 rounded-lg lg:col-span-2 xl:col-span-1 2xl:col-span-1">
-        <ChartPieLabel />
-      </div>
-    </div>
+    </nav>
   );
 }
