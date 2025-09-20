@@ -45,6 +45,10 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+.bg-gradient-custom {
+  background-image: var(--gradient-custom);
+}
+
 :root {
   --radius: 0.625rem;
   --color-button: oklch(0.4381 0.156 20.76);
@@ -60,6 +64,14 @@
   --card-foreground: oklch(0.147 0.004 49.25);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.147 0.004 49.25);
+  --color-bg-lobo: oklch(21% 0.005 286.32);
+  --color-bg-lobo-2: oklch(38% 0.01 286.32);
+  --gradient-custom: linear-gradient(
+    to bottom,
+    var(--color-bg-lobo) 0%,
+    var(--color-bg-lobo) 73%,
+    var(--color-bg-lobo-2) 100%
+  );
   --primary: oklch(0.216 0.006 56.043);
   --primary-lobo: oklch(0.4381 0.156 20.76);
   --primary-foreground: oklch(1 0 0);
