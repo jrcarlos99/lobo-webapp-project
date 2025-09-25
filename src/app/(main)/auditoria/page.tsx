@@ -9,12 +9,27 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { generateMockReports } from "@/mocks/audit";
+import { generateMockusers } from "@/components/AppTableUsers";
+import { useEffect, useState } from "react";
+import { AuditLog } from "@/types/user";
+
+const users = generateMockusers(8);
+const reports = generateMockReports(12, users);
 
 export default function AuditoriaPage() {
+  const [reports, setReports] = useState<AuditLog[] | null>(null);
+
+  useEffect(() => {
+    const r = generateMockReports(12);
+    setReports(r);
+  }, []);
+
+  if (!reports) return <div>Carregando registros...</div>;
+
   return (
     <div className="w-full space-y-4">
       <div className="bg-primary-foreground p-4 rounded-lg">
@@ -36,7 +51,6 @@ export default function AuditoriaPage() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>Hoje</DropdownMenuItem>
               <DropdownMenuItem>Ontem</DropdownMenuItem>
@@ -50,7 +64,7 @@ export default function AuditoriaPage() {
       </div>
 
       <div className="bg-primary-foreground rounded-lg">
-        <AppTableRelatorio />
+        <AppTableRelatorio reports={reports} />
       </div>
     </div>
   );

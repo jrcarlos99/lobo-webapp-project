@@ -1,6 +1,7 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { Badge } from "@/components/ui/badge";
 import {
   Bell,
   LogOut,
@@ -66,7 +67,15 @@ export const Navbar = () => {
       </SidebarGroup>
       {/* Right */}
       <div className="flex items-center gap-4">
-        <Bell />
+        <Button variant="ghost" size="icon">
+          <Badge
+            asChild
+            variant="outline"
+            className="h-5 min-w-5 rounded-full px-1 font-mono tabular-num"
+          >
+            <Bell />
+          </Badge>
+        </Button>
       </div>
     </nav>
   );

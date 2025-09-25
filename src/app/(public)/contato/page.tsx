@@ -1,18 +1,26 @@
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
 
+const HEADER_HEIGHT = 69;
+
 export default function ContatosPage() {
   return (
-    <main className="grid min-h-svh lg:grid-cols-2 bg-gradient-custom text-white">
+    <main
+      className="grid lg:grid-cols-2 bg-gradient-custom text-white"
+      style={{ minHeight: `calc(100vh - ${HEADER_HEIGHT}px)` }}
+    >
       {/* Lado Esquerdo */}
-      <div className="flex flex-col items-center justify-center p-8 lg:p-8 overflow-auto">
-        <div className="w-full max-w-[800px] h-auto">
+      <div className="flex items-center justify-center p-8 lg:p-8 overflow-auto min-h-0">
+        <div
+          className="w-full flex items-center justify-center"
+          style={{ maxHeight: `(100vh - ${HEADER_HEIGHT}px)` }}
+        >
           <Image
             alt="Imagem dos bombeiros"
             src="/bombeiros.svg"
             width={800}
             height={715}
-            className="w-full h-auto max-h-[60vh] lg:max-h-[80vh]"
+            className="w-auto h-auto max-w-full max-h-[calc(100vh - 69px)]"
             priority
           />
         </div>
@@ -42,20 +50,20 @@ export default function ContatosPage() {
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-6 mt-12">
+        <div className="flex items-center justify-center gap-6 mt-12">
           <Image
             alt="Logo do CBMPE"
             src="/logo_cbmpe.svg"
             width={150}
             height={150}
-            className="mx-auto"
+            className="w-[150px] h-[150px] object-contain"
           />
           <Image
             alt="Logo do LOBO"
             src="/lobo.svg"
-            width={200}
-            height={150}
-            className="mx-auto "
+            width={260}
+            height={178}
+            className="w-[260px] h-[178px] object-contain"
           />
         </div>
       </div>

@@ -1,8 +1,87 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import { AppDatePicker } from "@/components/AppDatePicker";
 import { InputWithButton } from "@/components/AppInputWithButton";
-import { AppTableUsers } from "@/components/AppTableUsers";
+import {
+  AppTableUsers,
+  generateMockusers,
+  User,
+} from "@/components/AppTableUsers";
+import { usePagination } from "@/hooks/usePagination";
+import { UsersResponse } from "@/types/user";
+
+// Simular chamada à API que irei substituir por uma chamada real
+const fetchUsers = async (
+  page: number,
+  pageSize: number,
+  searchTerm?: string
+): Promise<UsersResponse> => {
+  // Simula delay de rede
+  await new Promise((resolve) => setTimeout(resolve, 300));
+
+  const allUsers = generateMockusers(157); // Total de usuários mockados
+  const startIndex = (page - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+
+  const filteredUsers = searchTerm
+    ? allUsers.filter(
+        (user: User) =>
+          user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          user.email.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : allUsers;
+
+  const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
+
+  return {
+    users: paginatedUsers,
+    totalCount: filteredUsers.length,
+    page,
+    pageSize,
+    totalPages: Math.ceil(filteredUsers.length / pageSize),
+  };
+};
 
 export default function UsersPage() {
+  const [users, setUsers] = useState<User[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const pagination = usePagination({
+    itemsPerPage: 10,
+    totalItems: totalCount,
+  });
+
+  // Busca de usuários quando a página ou o search term mudar
+
+  useEffect(() => {
+    const loadUsers = async () => {
+      setIsLoading(true);
+      try {
+        const data = await fetchUsers(
+          pagination.currentPage,
+          pagination.pageSize,
+          searchTerm
+        );
+        setUsers(data.users);
+        setTotalCount(data.totalCount);
+      } catch (error) {
+        console.error("Erro ao carregar usuários:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadUsers();
+  }, [pagination.currentPage, pagination.pageSize, searchTerm]);
+
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
+    pagination.goToPage(1);
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-1 2xl:grid-cols-1 gap-4">
       <div className="bg-primary-foreground p-4 rounded-lg ">
@@ -12,10 +91,34 @@ export default function UsersPage() {
         </span>
       </div>
       <div className="bg-white p-4 rounded-lg shadow-sm flex flex-col md:flex-col items center gap-4">
-        <InputWithButton />
+        <InputWithButton
+          onSearch={handleSearch}
+          onAdd={() => console.log("Adicionar usuário")}
+          searchTerm={searchTerm}
+          onSearchTermChange={setSearchTerm}
+          placeholder="Buscar usuários por nome ou email..."
+        />
       </div>
+
       <div className="bg-primary-foreground rounded-lg">
-        <AppTableUsers />
+        {isLoading ? (
+          <div className="flex justify-center items-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+            <span className="ml-2">Carregando usuários...</span>
+          </div>
+        ) : (
+          <AppTableUsers
+            users={users}
+            currentPage={pagination.currentPage}
+            pageSize={pagination.pageSize}
+            totalItems={totalCount}
+            onPageChange={pagination.goToPage}
+            onPageSizeChange={(size) => {
+              pagination.setPageSize(size);
+              pagination.goToPage(1);
+            }}
+          />
+        )}
       </div>
     </div>
   );

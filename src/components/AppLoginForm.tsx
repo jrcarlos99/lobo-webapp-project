@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
 import { DrawerDialogDemo } from "./AppLoginDialog";
+import Image from "next/image";
 
 export function LoginForm({
   className,
@@ -17,36 +18,47 @@ export function LoginForm({
   return (
     <div className="h-full flex flex-col">
       {/* Container para centralizar o formulário */}
-      <div className="flex-grow flex items-center">
+      <div className="flex-grow flex items-center justify-center p-8">
         <form
-          className={cn("flex flex-col gap-6 w-full", className)}
+          className={cn("flex flex-col gap-6 w-full max-w-md", className)}
           {...props}
         >
+          <Image
+            alt=""
+            src="/lobo.svg"
+            height={100}
+            width={145}
+            className="mx-auto translate-x-1"
+          />
           <h1 className="text-2xl font-bold text-center">Entre na sua conta</h1>
 
+          <div className="border rounded-lg p-8">
+            <div className="grid gap-6">
+              <div className="grid gap-3">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  defaultValue="fireman@cbpmpe.gov.br"
+                  required
+                  className="h-12"
+                />
+              </div>
+
+              <div className="grid gap-3">
+                <Label htmlFor="password">Senha</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="*******"
+                  required
+                  className="h-12"
+                />
+              </div>
+            </div>
+          </div>
+
           <div className="grid gap-6">
-            <div className="grid gap-3">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                defaultValue="fireman@cbpmpe.gov.br"
-                required
-                className="h-12"
-              />
-            </div>
-
-            <div className="grid gap-3">
-              <Label htmlFor="password">Senha</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="*******"
-                required
-                className="h-12"
-              />
-            </div>
-
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <Checkbox id="remember" />
@@ -61,7 +73,7 @@ export function LoginForm({
                   e.preventDefault();
                   setOpenForgot(true);
                 }}
-                className="text-sm text-blue-600 underline-offset-4 hover:underline"
+                className="text-sm text-primary underline-offset-4 hover:underline"
               >
                 Esqueceu a senha?
               </a>

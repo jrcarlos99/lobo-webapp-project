@@ -15,11 +15,8 @@ export default function RelatorioPage() {
       </div>
 
       <div className="flex flex-row-reverse bg-primary-foreground p-4 rounded-2xl ">
-        <Button
-          className="bg-[var(--color-button)] hover:bg-[var(--color-button-hover) w-full sm:w-auto px-6 h-12"
-          variant={"destructive"}
-        >
-          Gerar Relatório
+        <Button className="bg-[var(--color-button)] hover:bg-[var(--color-secondary-lobo)] w-full sm:w-auto px-6 h-12">
+          <a href="">Gerar Relatório</a>
         </Button>
       </div>
       <div className="bg-white p-4 rounded-lg shadow-sm flex flex-col md:flex-col items center gap-4 col-span-2">

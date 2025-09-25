@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  House,
-  Settings,
-  User2,
-  FileText,
-  User,
-  Folder,
-  LogOut,
-} from "lucide-react";
+import { House, Settings, FileText, User, Folder, LogOut } from "lucide-react";
 
 import { usePathname } from "next/navigation";
 
@@ -54,67 +46,108 @@ const items = [
 export const AppSidebar = () => {
   const pathname = usePathname();
   const isMobile = useIsMobile();
+
+  const isSettingsActive = pathname === "/configuracao";
+
+  const HEADER_HEIGHT = 0;
+
   return (
-    <Sidebar collapsible={isMobile ? "icon" : "none"}>
-      <SidebarHeader className="flex items-center justify-center">
-        <SidebarMenu>
-          <Link href="/">
-            <Image src="/lobo.svg" alt="logo" width={70} height={40} />
-          </Link>
-        </SidebarMenu>
-      </SidebarHeader>
+    <div
+      className="lg:sticky lg:top-0 lg:block"
+      style={{
+        top: `${HEADER_HEIGHT}px`,
+        height: `calc(100vh - ${HEADER_HEIGHT}px)`,
+        overflow: "auto",
+      }}
+    >
+      <Sidebar collapsible={isMobile ? "icon" : "none"}>
+        <SidebarHeader className="flex items-center justify-center">
+          <SidebarMenu>
+            <Link href="/">
+              <Image src="/lobo.svg" alt="logo" width={70} height={40} />
+            </Link>
+          </SidebarMenu>
+        </SidebarHeader>
 
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu className="gap-3">
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname === item.url}
-                    className="flex-col h-14 justify-center gap-0.5 px-2 py-1"
-                  >
-                    <Link
-                      href={item.url}
-                      className="flex flex-col items-center"
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <SidebarMenu className="gap-3">
+                {items.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname === item.url}
+                      className="flex-col h-14 justify-center gap-0.5 px-2 py-1"
                     >
-                      <item.icon size={20} />
-                      <span className="text-xs">{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-      <SidebarFooter className="pt-4 border-t">
-        <SidebarMenu className="gap-4">
-          {/* Botão de Settings */}
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className="flex-col h-16 justify-center gap-1 px-2 py-1"
-            >
-              <Link href="/configuracao" className="flex flex-col items-center">
-                <Settings size={20} />
-                <span className="text-xs">Settings</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+                      <Link
+                        href={item.url}
+                        className="flex flex-col items-center"
+                      >
+                        <item.icon size={20} />
+                        <span className="text-xs">{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+        <SidebarFooter className="pt-4 border-t">
+          <SidebarMenu className="gap-4">
+            {/* Botão de Settings */}
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={isSettingsActive}
+                className="flex-col h-16 justify-center gap-1 px-2 py-1 "
+              >
+                <Link
+                  href="/configuracao"
+                  className={`
+              flex flex-col items-center 
+              ${
+                pathname === "/configuracao"
+                  ? "text-[var(--color-primary)]"
+                  : ""
+              }
+              hover:text-[var(--color-primary)] 
+              focus:text-[var(--color-primary)]
+            `}
+                >
+                  <Settings size={20} />
+                  <span className="text-xs">Settings</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
 
-          {/* Botão de Sair */}
-          <SidebarMenuItem>
-            <SidebarMenuButton className="flex-col h-16 justify-center gap-1 px-2 py-1">
-              <div className="flex flex-col items-center">
-                <LogOut size={20} />
-                <span className="text-xs">Sair</span>
-              </div>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
-    </Sidebar>
+            {/* Botão de Sair */}
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={isSettingsActive}
+                className="flex-col h-16 justify-center gap-1 px-2 py-1"
+              >
+                <div className="flex flex-col items-center">
+                  <Link
+                    href="/sair"
+                    className={`
+                    flex flex-col items-center 
+                    ${pathname === "/sair" ? "text-[var(--color-primary)]" : ""}
+                    hover:text-[var(--color-primary)] 
+                    focus:text-[var(--color-primary)]
+                    `}
+                  >
+                    <LogOut size={20} />
+                    <span className="text-xs">Sair</span>
+                  </Link>
+                </div>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarFooter>
+      </Sidebar>
+    </div>
   );
 };

@@ -70,8 +70,8 @@ export const AppSelect = () => {
         </Select>
       </div>
       <div className="pt-4">
-        <Button className=" w-full sm:w-[358px] bg-[var(--color-button)] hover:bg-[var(--color-button-hover)">
-          Gerar Estatística
+        <Button className=" w-full sm:w-[358px] bg-[var(--color-button)] hover:bg-[var(--color-secondary-lobo)]">
+          <a href="">Gerar Estatística</a>
         </Button>
       </div>
     </>
