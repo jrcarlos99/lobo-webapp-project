@@ -152,7 +152,7 @@ export const AppTableUsers = ({
       </div>
       {/* Controle de paginação */}
 
-      <div className="flex items-center justify-between px-2">
+      <div className="flex flex-wrap items-center justify-between gap-4 px-2">
         <div className="flex items-center space-x-2">
           <span className="text-sm text-muted-foreground">
             Itens por página:
@@ -177,14 +177,14 @@ export const AppTableUsers = ({
           <div className="flex w-[100px] items-center justify-center text-sm font-medium">
             Página {currentPage} de {totalPages}
           </div>
-          <div>
+          <div className="flex space-x-1">
             <Button
               variant="outline"
               className="hidden h-8 w-8 p-0 lg:flex"
               onClick={() => onPageChange(1)}
               disabled={currentPage === 1}
             >
-              <span>Primeira Página</span>
+              <span className="sr-only">Primeira Página</span>
               <ChevronLeft className="h-4 w-4" />
               <ChevronLeft className="h-4 w-4 -ml-2" />
             </Button>
@@ -208,7 +208,7 @@ export const AppTableUsers = ({
             </Button>
             <Button
               variant="outline"
-              className="hidden h-8 w-8 p-0 lg:flex"
+              className="h-8 w-8 p-0"
               onClick={() => onPageChange(totalPages)}
               disabled={currentPage === totalPages}
             >
