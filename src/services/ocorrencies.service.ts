@@ -3,23 +3,26 @@ import { scopeFiltersFor } from "@/policies/scope";
 import type { AuthUser } from "@/types/auth";
 import type { QueryParams } from "@/types/query";
 
+import { mockOcorrencias } from "@/data/mockOcurrences";
+
 export type Occurrence = {
   id_ocorrencia: number;
+  cidade: string;
+  regiao: string;
   status: string;
   tipo: string;
   tipo_ocorrencia: string;
   descricao?: string;
-  regiao?: string;
   latitude?: number;
   longitude?: number;
   data_hora?: string;
 };
 
 export const getOccurrencesFor = async (
-  users?: AuthUser,
+  currentUser?: AuthUser,
   extraParams?: QueryParams
 ): Promise<Occurrence[]> => {
-  const scope: QueryParams = scopeFiltersFor(users);
+  const scope: QueryParams = scopeFiltersFor(currentUser);
 
   // Unifica scope + params
   const params: QueryParams = {
@@ -39,6 +42,19 @@ export const getOccurrencesFor = async (
     }
   });
 
-  const res = await apiClient.get<Occurrence[]>("/ocorrencia", { params });
-  return res.data as Occurrence[];
+  await new Promise((resolve) => setTimeout(resolve, 300));
+
+  let results = mockOcorrencias;
+  const filtroCidades = params.cidades as string | undefined;
+
+  if (filtroCidades) {
+    const cidadesAutorizadas = filtroCidades.split(",");
+
+    results = results.filter((ocorrencia) =>
+      cidadesAutorizadas.includes(ocorrencia.cidade)
+    );
+  }
+  return results;
+  // const res = await apiClient.get<Occurrence[]>("/ocorrencia", { params });
+  // return res.data as Occurrence[];
 };

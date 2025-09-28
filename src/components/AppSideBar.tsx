@@ -18,6 +18,9 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Dialog, DialogTrigger } from "./ui/dialog";
+import { useState } from "react";
+import { LogoutForm } from "./AppLogoutDialog";
 
 // Menu items.
 const items = [
@@ -46,6 +49,8 @@ const items = [
 export const AppSidebar = () => {
   const pathname = usePathname();
   const isMobile = useIsMobile();
+
+  const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
 
   const isSettingsActive = pathname === "/configuracao";
 
@@ -124,26 +129,35 @@ export const AppSidebar = () => {
 
             {/* Botão de Sair */}
             <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={isSettingsActive}
-                className="flex-col h-16 justify-center gap-1 px-2 py-1"
+              <Dialog
+                open={isLogoutDialogOpen}
+                onOpenChange={setIsLogoutDialogOpen}
               >
-                <div className="flex flex-col items-center">
-                  <Link
-                    href="/sair"
-                    className={`
+                <SidebarMenuButton
+                  asChild
+                  isActive={isSettingsActive}
+                  className="flex-col h-16 justify-center gap-1 px-2 py-1"
+                >
+                  <DialogTrigger asChild>
+                    <div
+                      className={`
                     flex flex-col items-center 
-                    ${pathname === "/sair" ? "text-[var(--color-primary)]" : ""}
+                    ${pathname === "/exit" ? "text-[var(--color-primary)]" : ""}
                     hover:text-[var(--color-primary)] 
                     focus:text-[var(--color-primary)]
                     `}
-                  >
-                    <LogOut size={20} />
-                    <span className="text-xs">Sair</span>
-                  </Link>
-                </div>
-              </SidebarMenuButton>
+                    >
+                      <LogOut size={20} />
+                      <span className="text-xs">Sair</span>
+                    </div>
+                  </DialogTrigger>
+                </SidebarMenuButton>
+
+                <LogoutForm
+                  isOpen={isLogoutDialogOpen}
+                  onClose={() => setIsLogoutDialogOpen(false)}
+                />
+              </Dialog>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarFooter>

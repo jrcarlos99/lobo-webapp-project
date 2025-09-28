@@ -5,6 +5,7 @@ export type AuthUser = {
   email: string;
   nome?: string;
   cargo?: AuthRole;
-  regiao?: string;
+  regiaoAutorizada?: string;
+  cidadesAutorizadas?: string[];
   id_bombeiro?: number;
 };

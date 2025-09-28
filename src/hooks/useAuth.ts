@@ -1,6 +1,8 @@
+"use client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import * as authService from "@/services/auth.services";
 import type { AuthUser } from "@/types/auth";
+import { useRouter } from "next/navigation";
 
 type loginParams = {
   email: string;
@@ -13,6 +15,7 @@ export const useCurrentUser = () =>
     queryFn: authService.me,
     retry: false,
     staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
   });
 
 export const useLogin = () => {
@@ -29,12 +32,25 @@ export const useLogin = () => {
 
 export const useLogout = () => {
   const qc = useQueryClient();
+  const router = useRouter();
 
   return useMutation<void, Error, void>({
-    mutationFn: () => authService.logout(),
+    mutationFn: () => {
+      return authService.logout();
+    },
 
     onSuccess: () => {
-      qc.setQueryData(["me"], null);
+      localStorage.removeItem("authToken");
+
+      qc.clear();
+
+      router.push("/auth/login");
+    },
+
+    onError: () => {
+      localStorage.removeItem("authToken");
+      qc.clear();
+      router.push("/auth/login");
     },
   });
 };

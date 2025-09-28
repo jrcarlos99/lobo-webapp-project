@@ -11,6 +11,9 @@ import {
 import { usePagination } from "@/hooks/usePagination";
 import { UsersResponse } from "@/types/user";
 
+import { useCurrentUser } from "@/hooks/useAuth";
+import { can } from "@/policies/permissions";
+
 // Simular chamada à API que irei substituir por uma chamada real
 const fetchUsers = async (
   page: number,
@@ -44,6 +47,9 @@ const fetchUsers = async (
 };
 
 export default function UsersPage() {
+  const { data: currentUser } = useCurrentUser();
+  const userRole = currentUser?.cargo;
+
   const [users, setUsers] = useState<User[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -82,6 +88,11 @@ export default function UsersPage() {
     pagination.goToPage(1);
   };
 
+  const canManageUsers = can(userRole, "users:manage");
+  const handleAdd = canManageUsers
+    ? () => console.log("Adicionar usuário")
+    : undefined;
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-1 2xl:grid-cols-1 gap-4">
       <div className="bg-primary-foreground p-4 rounded-lg ">
@@ -93,7 +104,7 @@ export default function UsersPage() {
       <div className="bg-white p-4 rounded-lg shadow-sm flex flex-col md:flex-col items center gap-4">
         <InputWithButton
           onSearch={handleSearch}
-          onAdd={() => console.log("Adicionar usuário")}
+          onAdd={handleAdd}
           searchTerm={searchTerm}
           onSearchTermChange={setSearchTerm}
           placeholder="Buscar usuários por nome ou email..."

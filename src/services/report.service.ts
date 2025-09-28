@@ -7,6 +7,6 @@ export const getDashboardStats = async (params?: QueryParams) => {
 };
 
 export const generateDashboardStats = async (body: unknown) => {
-  const res = await apiClient.get("/reports/generate", body);
+  const res = await apiClient.post("/reports/generate", body);
   return res.data;
 };

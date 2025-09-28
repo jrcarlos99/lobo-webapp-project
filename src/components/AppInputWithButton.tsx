@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import clsx from "clsx";
 import { Plus, Search } from "lucide-react";
-import RoleGuard from "@/components/RoleGuard";
 
 interface InputWithButtonProps {
   className?: string;
@@ -53,16 +52,16 @@ export function InputWithButton({
       </div>
 
       {/* Botão Adicionar */}
-      {/* <RoleGuard roles={["ADMIN"]}> */}
-      <Button
-        onClick={onAdd}
-        size="lg"
-        className="bg-[var(--color-primary)] text-white hover:bg-[var(--color-secondary-lobo)] whitespace-nowrap"
-      >
-        <Plus className="w-4 h-4 mr-2" />
-        {buttonText}
-      </Button>
-      {/* </RoleGuard> */}
+      {onAdd && (
+        <Button
+          onClick={onAdd}
+          size="lg"
+          className="bg-[var(--color-primary)] text-white hover:bg-[var(--color-secondary-lobo)] whitespace-nowrap"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          {buttonText}
+        </Button>
+      )}
     </div>
   );
 }

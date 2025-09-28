@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import {
   Table,
   TableBody,
@@ -8,83 +9,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Report } from "@/types/reports";
-import { Roles } from "@/types/roles";
+import type { Report } from "@/types/reports";
 import { Regions } from "@/types/reports";
 import { regions, cities } from "@/mocks/locations";
-import { useMemo, useState } from "react";
+import type { Occurrence } from "@/services/ocorrencies.service";
 
-// const reports = [
-//   {
-//     title: "Falta de Equipamento",
-//     type: "EPI",
-//     region: "Centro",
-//     status: "Em andamento",
-//   },
-//   {
-//     title: "Incêndio Estrutural",
-//     type: "Incêndio",
-//     region: "Zona Norte",
-//     status: "Concluído",
-//   },
-//   {
-//     title: "Falta de Equipamento",
-//     type: "EPI",
-//     region: "Zona Sul",
-//     status: "",
-//   },
-//   {
-//     title: "Acidente de Trânsito",
-//     type: "Acidente",
-//     region: "Centro",
-//     status: "Concluído",
-//   },
-//   {
-//     title: "Acidente Doméstico",
-//     type: "Acidente",
-//     region: "Zona Norte",
-//     status: "Em andamento",
-//   },
-//   {
-//     title: "Afogamento",
-//     type: "Salvamento",
-//     region: "Zona Sul",
-//     status: "Concluído",
-//   },
-// ];
+// --- tipos auxiliares para filtros ---
+type FilterPayload = {
+  regionId?: string;
+  cityId?: string;
+};
 
-// export const sampleRecords: Report[] = [
-//   {
-//     id: "r1",
-//     title: "Falta de Equipamento",
-//     type: "EPI",
-//     region: Regions.METROPOLITANA,
-
-//     status: "concluido",
-//     createdAt: "2025-09-01T08:30:00.000Z",
-//     reportedByName: "Juliana Silveira",
-//   },
-//   {
-//     id: "r2",
-//     title: "Incêndio Estrutural",
-//     type: "Incêndio",
-//     region: Regions.AGRESTE,
-//     status: "em_andamento",
-//     createdAt: "2025-09-02T14:10:00.000Z",
-//     reportedByName: "João Gomes",
-//   },
-// ];
-
-export function ReportFilters({ onFilter }) {
-  const [regionId, setRegionId] = useState<string | undefined>(undefined);
-  const [cityId, setCityId] = useState<string | undefined>(undefined);
-
-  const cityOptions = useMemo(
-    () => (regionId ? cities.filter((c) => c.regionId === regionId) : cities),
-    [regionId]
-  );
-}
-
+// --- utilitário para formatar status ---
 function prettyStatus(status?: string) {
   if (!status) return "-";
   const map: Record<string, string> = {
@@ -99,38 +35,36 @@ function prettyStatus(status?: string) {
   );
 }
 
-export const AppTable = ({
-  records = sampleRecords,
-}: {
-  records?: Report[];
-}) => {
+// --- componente principal da tabela ---
+export const AppTable = ({ data = [] }: { data?: Occurrence[] }) => {
   return (
-    <div className="border rounded-xl">
+    <div className="border rounded-xl overflow-x-auto">
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead className="text-center">Título</TableHead>
-            <TableHead className="text-center">Tipo</TableHead>
+            <TableHead className="text-center">Cidade</TableHead>
             <TableHead className="text-center">Região</TableHead>
+            <TableHead className="text-center">Tipo</TableHead>
             <TableHead className="text-center">Status</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {records.length > 0 ? (
-            records.map((report) => (
-              <TableRow key={report.id}>
+          {data.length > 0 ? (
+            data.map((occurrence) => (
+              <TableRow key={occurrence.id_ocorrencia}>
                 <TableCell className="font-medium text-center">
-                  {report.title}
-                </TableCell>
-                <TableCell className="text-center">{report.type}</TableCell>
-                <TableCell className="text-center">{report.region}</TableCell>
-                <TableCell className="text-center">
-                  {prettyStatus(report.status)}
+                  {occurrence.id_ocorrencia}
                 </TableCell>
                 <TableCell className="text-center">
-                  {report.createdAt
-                    ? new Date(report.createdAt).toLocaleDateString()
-                    : "-"}
+                  {occurrence.cidade}
+                </TableCell>
+                <TableCell className="text-center">
+                  {occurrence.regiao}
+                </TableCell>
+                <TableCell className="text-center">{occurrence.tipo}</TableCell>
+                <TableCell className="text-center">
+                  {prettyStatus(occurrence.status)}
                 </TableCell>
               </TableRow>
             ))
@@ -144,16 +78,6 @@ export const AppTable = ({
               </TableCell>
             </TableRow>
           )}
-          {/* {reports.map((report, index) => (
-            <TableRow key={index}>
-              <TableCell className="font-medium text-center">
-                {report.title}
-              </TableCell>
-              <TableCell className="text-center">{report.type}</TableCell>
-              <TableCell className="text-center">{report.region}</TableCell>
-              <TableCell className="text-center">{report.region}</TableCell>
-            </TableRow>
-          ))} */}
         </TableBody>
       </Table>
     </div>

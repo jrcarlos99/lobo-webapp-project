@@ -9,17 +9,31 @@ export const isAnalista = (u?: AuthUser) => u?.cargo === "ANALISTA";
 
 export function scopeFiltersFor(user?: AuthUser): QueryParams {
   if (!user) return {};
-  if (isAdmin(user)) return {}; // sem filtros
+  if (isAdmin(user)) return {}; // sem filtros para o admin
+
+  const { regiaoAutorizada, cidadesAutorizadas, id_bombeiro } = user;
+
+  // Chefes e Analistas
+  const filters: QueryParams = {};
+
+  // Cidades autorizadas
+  if (cidadesAutorizadas && cidadesAutorizadas.length > 0) {
+    filters.cidades = cidadesAutorizadas.join(",");
+  }
+
   if (isChefe(user)) {
-    return {
-      ...(user.regiao ? { regiao: user.regiao } : {}),
-    };
+    if (regiaoAutorizada) {
+      filters.regiao = regiaoAutorizada;
+    }
   }
+
   if (isAnalista(user)) {
-    return {
-      ...(user?.regiao ? { regiao: user.regiao } : {}),
-      ...(user.id_bombeiro ? { id_bombeiro: user.id_bombeiro } : {}),
-    };
+    if (regiaoAutorizada) {
+      filters.regiao = regiaoAutorizada;
+    }
+    if (id_bombeiro) {
+      filters.id_bombeiro = id_bombeiro;
+    }
   }
-  return {};
+  return filters;
 }

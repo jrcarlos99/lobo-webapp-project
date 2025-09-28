@@ -26,7 +26,6 @@ export function LoginForm({
       await login.mutateAsync(values);
       router.push("/dashboard");
     } catch (err: unknown) {
-      // alert(err.message ?? "Erro ao logar");
       let errorMessage = "Erro desconhecido ao logar";
 
       if (err instanceof Error) {
