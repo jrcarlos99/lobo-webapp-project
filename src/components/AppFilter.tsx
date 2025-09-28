@@ -45,13 +45,10 @@ export const AppFilter = () => {
             <SelectValue placeholder="Região" />
           </SelectTrigger>
           <SelectContent className="font-inter">
-            <SelectItem value="downtown">Centro</SelectItem>
-            <SelectItem value="north">Zona Norte</SelectItem>
-            <SelectItem value="south">Zona Sul</SelectItem>
-            <SelectItem value="east">Zona Leste</SelectItem>
-            <SelectItem value="west">Zona Oeste</SelectItem>
             <SelectItem value="rmr">Região Metropolitana</SelectItem>
-            <SelectItem value="countryside">Interior</SelectItem>
+            <SelectItem value="downtown">Zona da Mata</SelectItem>
+            <SelectItem value="north">Agreste</SelectItem>
+            <SelectItem value="south">Sertão</SelectItem>
           </SelectContent>
         </Select>
 

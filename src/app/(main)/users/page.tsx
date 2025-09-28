@@ -20,7 +20,7 @@ const fetchUsers = async (
   // Simula delay de rede
   await new Promise((resolve) => setTimeout(resolve, 300));
 
-  const allUsers = generateMockusers(157); // Total de usuários mockados
+  const allUsers = generateMockusers(157);
   const startIndex = (page - 1) * pageSize;
   const endIndex = startIndex + pageSize;
 

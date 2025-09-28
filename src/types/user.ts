@@ -1,9 +1,12 @@
+import { Region } from "./reports";
+
 export interface User {
   id: string;
   name: string;
   email: string;
   roles: string;
   department?: string;
+  region?: Region;
   status: "active" | "inactive";
   lastLogin?: string;
 }

@@ -53,13 +53,15 @@ export const Navbar = () => {
                     <AvatarImage
                       className="size-8 rounded-xl"
                       src="https://avatars.githubusercontent.com/u/1486366"
-                      alt="@shadcn"
+                      alt="@l.o.b.o"
                     />
                     <AvatarFallback>CN</AvatarFallback>
                   </Avatar>
                 </div>
                 <span className="font-semibold text-sm">João Carlos</span>
-                <span className="text-xs text-muted-foreground">Admin</span>
+                <span className="text-xs text-muted-foreground">
+                  Admin - Zona da Mata
+                </span>
               </div>
             </SidebarMenuItem>
           </SidebarMenu>

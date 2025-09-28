@@ -9,17 +9,48 @@ import { useState } from "react";
 import { DrawerDialogDemo } from "./AppLoginDialog";
 import Image from "next/image";
 
+import { useLogin } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
+
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
   const [openForgot, setOpenForgot] = useState(false);
 
+  const router = useRouter();
+  const login = useLogin();
+
+  const onSubmit = async (values: { email: string; senha: string }) => {
+    try {
+      await login.mutateAsync(values);
+      router.push("/dashboard");
+    } catch (err: unknown) {
+      // alert(err.message ?? "Erro ao logar");
+      let errorMessage = "Erro desconhecido ao logar";
+
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      } else if (typeof err === "object" && err !== null && "message" in err) {
+        errorMessage = (err as { message: string }).message;
+      }
+      alert(errorMessage);
+    }
+  };
+
   return (
     <div className="h-full flex flex-col">
       {/* Container para centralizar o formulário */}
       <div className="flex-grow flex items-center justify-center p-8">
         <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            const fd = new FormData(e.currentTarget);
+            onSubmit({
+              email: fd.get("email") as string,
+              senha: fd.get("senha") as string,
+            });
+          }}
           className={cn("flex flex-col gap-6 w-full max-w-md", className)}
           {...props}
         >
@@ -38,6 +69,7 @@ export function LoginForm({
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
+                  name="email"
                   type="email"
                   defaultValue="fireman@cbpmpe.gov.br"
                   required
@@ -49,6 +81,7 @@ export function LoginForm({
                 <Label htmlFor="password">Senha</Label>
                 <Input
                   id="password"
+                  name="senha"
                   type="password"
                   placeholder="*******"
                   required
