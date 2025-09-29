@@ -3,6 +3,7 @@
 import { House, Settings, FileText, User, Folder, LogOut } from "lucide-react";
 
 import { usePathname } from "next/navigation";
+import { can } from "@/policies/permissions";
 
 import {
   Sidebar,
@@ -21,6 +22,8 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Dialog, DialogTrigger } from "./ui/dialog";
 import { useState } from "react";
 import { LogoutForm } from "./AppLogoutDialog";
+import { useCurrentUser } from "@/hooks/useAuth";
+import { RestrictedSidebarLink } from "./RestrictedSidebarLink";
 
 // Menu items.
 const items = [
@@ -47,6 +50,32 @@ const items = [
 ];
 
 export const AppSidebar = () => {
+  const { data: currentUser } = useCurrentUser();
+  const userRole = currentUser?.cargo;
+
+  const canAccessSettings = true;
+  const isSettingsLinkDisabled = false;
+  const settingsTooltipMessage = undefined;
+
+  // Determina permissão
+  const canManageUsers = can(userRole, "users:manage");
+
+  // Define o estado de desabilitado para o link de usuários
+  const isUsersLinkDisabled = !canManageUsers;
+
+  // Define a mensagemda tooltip
+  const usersTooltipMessage = isUsersLinkDisabled
+    ? "Apenas administradores têm acesso à gestão de usuários."
+    : undefined;
+
+  // Logica para Auditoria/Logs
+  const canAccessLogs = can(userRole, "occurrence:all");
+
+  const isLogsLinkDisabled = !canAccessLogs;
+  const logsTooltipMessage = isLogsLinkDisabled
+    ? "Seu perfil não possui permissão para visualizar os logs de auditoria."
+    : undefined;
+
   const pathname = usePathname();
   const isMobile = useIsMobile();
 
@@ -78,23 +107,30 @@ export const AppSidebar = () => {
           <SidebarGroup>
             <SidebarGroupContent>
               <SidebarMenu className="gap-3">
-                {items.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname === item.url}
-                      className="flex-col h-14 justify-center gap-0.5 px-2 py-1"
-                    >
-                      <Link
-                        href={item.url}
-                        className="flex flex-col items-center"
-                      >
-                        <item.icon size={20} />
-                        <span className="text-xs">{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
+                {items.map((item) => {
+                  let linkProps = {};
+
+                  if (item.title === "Usuários") {
+                    linkProps = {
+                      disabled: isUsersLinkDisabled,
+                      tooltipMessage: usersTooltipMessage,
+                    };
+                  } else if (item.title === "Auditoria/Logs") {
+                    linkProps = {
+                      disabled: isLogsLinkDisabled,
+                      tooltipMessage: logsTooltipMessage,
+                    };
+                  }
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <RestrictedSidebarLink
+                        item={item}
+                        pathname={pathname}
+                        {...linkProps}
+                      />
+                    </SidebarMenuItem>
+                  );
+                })}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>

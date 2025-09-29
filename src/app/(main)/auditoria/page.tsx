@@ -17,16 +17,32 @@ import { generateMockusers } from "@/components/AppTableUsers";
 import { useEffect, useState } from "react";
 import { AuditLog } from "@/types/user";
 
+import { useCurrentUser } from "@/hooks/useAuth";
+import { can } from "@/policies/permissions";
+import { redirect } from "next/navigation";
+
 const users = generateMockusers(8);
 const reports = generateMockReports(12, users);
 
 export default function AuditoriaPage() {
+  const { data: currentUser, isLoading: isAuthLoading } = useCurrentUser();
   const [reports, setReports] = useState<AuditLog[] | null>(null);
 
   useEffect(() => {
     const r = generateMockReports(12);
     setReports(r);
   }, []);
+
+  if (isAuthLoading) {
+    return <div>Carregando perfil...</div>;
+  }
+
+  const userRole = currentUser?.cargo;
+  const canAccessPage = can(userRole, "occurrence:all");
+
+  if (!canAccessPage) {
+    redirect("/dashboard");
+  }
 
   if (!reports) return <div>Carregando registros...</div>;
 

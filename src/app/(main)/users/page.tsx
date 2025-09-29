@@ -13,6 +13,7 @@ import { UsersResponse } from "@/types/user";
 
 import { useCurrentUser } from "@/hooks/useAuth";
 import { can } from "@/policies/permissions";
+import { redirect } from "next/navigation";
 
 // Simular chamada à API que irei substituir por uma chamada real
 const fetchUsers = async (
@@ -46,8 +47,12 @@ const fetchUsers = async (
   };
 };
 
+const MOCK_INITIAL_PAGE_SIZE = 10;
+
 export default function UsersPage() {
-  const { data: currentUser } = useCurrentUser();
+  const { data: currentUser, isLoading: isAuthLoading } = useCurrentUser();
+
+  // Lógica de Paginação e Busca
   const userRole = currentUser?.cargo;
 
   const [users, setUsers] = useState<User[]>([]);
@@ -56,10 +61,9 @@ export default function UsersPage() {
   const [searchTerm, setSearchTerm] = useState("");
 
   const pagination = usePagination({
-    itemsPerPage: 10,
+    itemsPerPage: MOCK_INITIAL_PAGE_SIZE,
     totalItems: totalCount,
   });
-
   // Busca de usuários quando a página ou o search term mudar
 
   useEffect(() => {
@@ -83,15 +87,23 @@ export default function UsersPage() {
     loadUsers();
   }, [pagination.currentPage, pagination.pageSize, searchTerm]);
 
+  // Logica de proteção de rota
+  if (isAuthLoading) {
+    return <div>Carregando perfil...</div>;
+  }
+
+  const canAccessPage = can(currentUser?.cargo, "users:manage");
+
+  if (!canAccessPage) {
+    redirect("/dashboard");
+  }
+
   const handleSearch = (term: string) => {
     setSearchTerm(term);
     pagination.goToPage(1);
   };
 
-  const canManageUsers = can(userRole, "users:manage");
-  const handleAdd = canManageUsers
-    ? () => console.log("Adicionar usuário")
-    : undefined;
+  const handleAdd = () => console.log("Adicionar usuário (APENAS ADMIN)");
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-1 2xl:grid-cols-1 gap-4">
@@ -101,6 +113,7 @@ export default function UsersPage() {
           Usuários
         </span>
       </div>
+
       <div className="bg-white p-4 rounded-lg shadow-sm flex flex-col md:flex-col items center gap-4">
         <InputWithButton
           onSearch={handleSearch}

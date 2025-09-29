@@ -6,6 +6,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import { useCurrentUser } from "@/hooks/useAuth";
+import { can } from "@/policies/permissions";
 import type { QueryParams } from "@/types/query";
 
 interface AppFilterProps {
@@ -17,6 +19,11 @@ export const AppFilter = ({
   cidadesAutorizadas,
   onFilterChange,
 }: AppFilterProps) => {
+  const { data: currentUser } = useCurrentUser();
+  const userRole = currentUser?.cargo;
+
+  const canSeeAllRegions = can(userRole, "occurrence:all");
+
   const [selectedPeriod, setSelectedPeriod] = useState<string | undefined>(
     undefined
   );
@@ -29,6 +36,23 @@ export const AppFilter = ({
   const [selectedStatus, setSelectedStatus] = useState<string | undefined>(
     undefined
   );
+
+  useEffect(() => {
+    if (!canSeeAllRegions && cidadesAutorizadas.length > 0) {
+      const cidadeForcada = cidadesAutorizadas[0];
+
+      setSelectedCity(cidadeForcada);
+
+      if (cidadeForcada !== "all") {
+        onFilterChange((prev) => ({
+          ...prev,
+          cidadeFiltro: cidadeForcada,
+        }));
+      }
+    } else if (canSeeAllRegions && selectedCity === cidadesAutorizadas[0]) {
+      setSelectedCity(undefined);
+    }
+  }, [canSeeAllRegions, cidadesAutorizadas, onFilterChange]);
 
   useEffect(() => {
     const newFilters: QueryParams = {};
@@ -90,12 +114,24 @@ export const AppFilter = ({
         </Select>
 
         {/* Dropdown de Cidade (Restrito pela autorização) */}
-        <Select onValueChange={setSelectedCity} value={selectedCity}>
+        <Select
+          onValueChange={setSelectedCity}
+          value={selectedCity}
+          disabled={!canSeeAllRegions && cidadesAutorizadas.length <= 1}
+        >
           <SelectTrigger className="font-inter bg-stone-5 w-full ">
-            <SelectValue placeholder="Cidade" />
+            <SelectValue
+              placeholder={
+                !canSeeAllRegions && cidadesAutorizadas.length === 1
+                  ? cidadesAutorizadas[0]
+                  : "Cidade"
+              }
+            />
           </SelectTrigger>
           <SelectContent className="font-inter">
-            <SelectItem value="all">Todas as Cidades</SelectItem>
+            {canSeeAllRegions && (
+              <SelectItem value="all">Todas as Cidades</SelectItem>
+            )}
             {cidadesAutorizadas.map((cidade) => (
               <SelectItem key={cidade} value={cidade}>
                 {cidade}

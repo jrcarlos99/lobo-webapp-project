@@ -1,3 +1,4 @@
+"use client";
 import { AppDatePicker } from "@/components/AppDatePicker";
 import {
   Card,
@@ -13,7 +14,20 @@ import { Button } from "@/components/ui/button";
 import { ThemeRadioGroup } from "@/components/AppModoToggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
+import { useCurrentUser } from "@/hooks/useAuth";
+import { can } from "@/policies/permissions";
+
 export default function SettingsPage() {
+  const { data: currentUser, isLoading: isAuthLoading } = useCurrentUser();
+
+  if (isAuthLoading) {
+    return <div>Carregando perfil...</div>;
+  }
+
+  const userRole = currentUser?.cargo;
+
+  const canEditSystemConfig = can(userRole, "config:edit");
+
   return (
     <div className="space-y-6">
       <div className="bg-primary-foreground p-4 rounded-lg">
