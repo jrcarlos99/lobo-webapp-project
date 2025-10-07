@@ -1,7 +1,5 @@
 "use client";
-
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
 import { useState } from "react";
 
 export function QueryProvider({ children }: { children: React.ReactNode }) {
@@ -10,8 +8,7 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            // Desativa o refetching agressivo para o desenvolvimento
-            staleTime: 1000 * 60 * 5,
+            staleTime: 60 * 1000,
           },
         },
       })

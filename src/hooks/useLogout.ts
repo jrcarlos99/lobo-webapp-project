@@ -13,7 +13,7 @@ export const useLogout = () => {
     // Limpa o cache do React Query
     queryClient.clear();
     // Redireciona para a página de login
-    router.push("/auth/login");
+    router.push("/login");
   };
   return handleLogout;
 };

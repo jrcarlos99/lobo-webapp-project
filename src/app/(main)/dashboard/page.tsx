@@ -1,3 +1,11 @@
+"use client";
+import { useCurrentUser } from "@/hooks/useAuth";
+import { useQuery } from "@tanstack/react-query";
+import {
+  getDashboardData,
+  DashboardData,
+} from "@/services/ocorrencies.service";
+
 import { AppBarChart } from "@/components/AppBarChart";
 import { AppDatePicker } from "@/components/AppDatePicker";
 import { AppOcorrenciaChart } from "@/components/AppOcorrenciaChart";
@@ -8,6 +16,25 @@ import { AppSelect } from "@/components/AppSelect";
 const HEADER_HEIGHT = 69;
 
 export default function HomePage() {
+  const { data: currentUser, isLoading: isUserLoading } = useCurrentUser();
+
+  const { data: dashboardData, isLoading: isDataLoading } =
+    useQuery<DashboardData>({
+      queryKey: ["dashboard", currentUser],
+      queryFn: () => {
+        return getDashboardData(currentUser!);
+      },
+      enabled: !!currentUser,
+      staleTime: 1000 * 60 * 5,
+    });
+
+  const isLoading = isUserLoading || isDataLoading;
+
+  if (isLoading) {
+    return <div className="p-4">Carregando Dashboard</div>;
+  }
+
+  const chartData = dashboardData || {};
   return (
     <div
       style={{ minHeight: `calc(100vh - ${HEADER_HEIGHT}px)` }}

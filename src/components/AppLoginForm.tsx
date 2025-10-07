@@ -5,35 +5,43 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useState } from "react";
+import React, { useState } from "react";
 import { DrawerDialogDemo } from "./AppLoginDialog";
 import Image from "next/image";
 
 import { useLogin } from "@/hooks/useAuth";
-import { useRouter } from "next/navigation";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
   const [openForgot, setOpenForgot] = useState(false);
+  const [error, setError] = useState<string>("");
 
-  const router = useRouter();
-  const login = useLogin();
+  const loginMutation = useLogin();
 
-  const onSubmit = async (values: { email: string; senha: string }) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    const formData = new FormData(e.currentTarget as HTMLFormElement);
+    const email = formData.get("email") as string;
+    const senha = formData.get("senha") as string;
+
+    console.log("Tentando login com:", { email });
+
     try {
-      await login.mutateAsync(values);
-      router.push("/dashboard");
+      await loginMutation.mutateAsync({ email, senha });
     } catch (err: unknown) {
-      let errorMessage = "Erro desconhecido ao logar";
+      let errorMessage = "Erro ao fazer login";
 
       if (err instanceof Error) {
         errorMessage = err.message;
       } else if (typeof err === "object" && err !== null && "message" in err) {
         errorMessage = (err as { message: string }).message;
       }
-      alert(errorMessage);
+
+      setError(errorMessage);
     }
   };
 
@@ -42,14 +50,7 @@ export function LoginForm({
       {/* Container para centralizar o formulário */}
       <div className="flex-grow flex items-center justify-center p-8">
         <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            const fd = new FormData(e.currentTarget);
-            onSubmit({
-              email: fd.get("email") as string,
-              senha: fd.get("senha") as string,
-            });
-          }}
+          onSubmit={handleSubmit}
           className={cn("flex flex-col gap-6 w-full max-w-md", className)}
           {...props}
         >
@@ -61,6 +62,12 @@ export function LoginForm({
             className="mx-auto translate-x-1"
           />
           <h1 className="text-2xl font-bold text-center">Entre na sua conta</h1>
+
+          {error && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded text-sm">
+              {error}
+            </div>
+          )}
 
           <div className="border rounded-lg p-8">
             <div className="grid gap-6">
@@ -111,7 +118,11 @@ export function LoginForm({
               </a>
             </div>
 
-            <Button type="submit" className="w-full h-12">
+            <Button
+              type="submit"
+              className="w-full h-12"
+              disabled={loginMutation.isPending}
+            >
               Entrar
             </Button>
           </div>

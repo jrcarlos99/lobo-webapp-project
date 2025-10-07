@@ -11,8 +11,22 @@ import {
 } from "@/components/ui/navigation-menu";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { useEffect } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
 
 export default function HeaderPage() {
+  const { isAuthenticated } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/dashboard");
+    } else {
+      router.push("/auth/login");
+    }
+  }, [isAuthenticated, router]);
+
   return (
     <nav className="flex items-center p-4 bg-background border-b border-border">
       {/* Nav da Esquerda */}

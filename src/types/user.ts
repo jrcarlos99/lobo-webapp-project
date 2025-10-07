@@ -11,6 +11,15 @@ export interface User {
   lastLogin?: string;
 }
 
+export interface ApiUser {
+  id: number;
+  nomeCompleto: string;
+  email: string;
+  perfil: string;
+  regiao: string | null;
+  ultimoLogin?: string;
+}
+
 export interface UsersResponse {
   users: User[];
   totalCount: number;
@@ -41,11 +50,3 @@ export type LogDetail =
       message?: string;
       meta?: Record<string, unknown>;
     };
-export type AuditLog = {
-  id: string;
-  timestamp: string;
-  userId?: string | number;
-  username?: string;
-  action: string;
-  detail: LogDetail;
-};

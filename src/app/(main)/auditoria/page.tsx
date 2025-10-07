@@ -13,20 +13,32 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { generateMockReports } from "@/mocks/audit";
-import { generateMockusers } from "@/components/AppTableUsers";
+
 import { useEffect, useState } from "react";
-import { AuditLog } from "@/types/user";
+import { AuditLog } from "@/types/audit";
 
 import { useCurrentUser } from "@/hooks/useAuth";
 import { can } from "@/policies/permissions";
 import { redirect } from "next/navigation";
-
-const users = generateMockusers(8);
-const reports = generateMockReports(12, users);
+import { auditService } from "@/services/audit.service";
 
 export default function AuditoriaPage() {
   const { data: currentUser, isLoading: isAuthLoading } = useCurrentUser();
   const [reports, setReports] = useState<AuditLog[] | null>(null);
+
+  useEffect(() => {
+    setReports(auditService.getAll());
+
+    const handle = (e: Event) => {
+      const newLog = (e as CustomEvent).detail as AuditLog;
+      setReports((prev) => (prev ? [...prev, newLog] : [newLog]));
+    };
+    window.addEventListener("audit:updated", handle as EventListener);
+
+    return () => {
+      window.removeEventListener("audit:updated", handle as EventListener);
+    };
+  }, []);
 
   useEffect(() => {
     const r = generateMockReports(12);

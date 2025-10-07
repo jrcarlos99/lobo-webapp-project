@@ -2,6 +2,7 @@
 
 import { TrendingUp } from "lucide-react";
 import { Pie, PieChart } from "recharts";
+import { useDashboardData } from "@/hooks/useDashboardData";
 
 import {
   Card,
@@ -22,15 +23,11 @@ import {
 
 export const description = "A donut chart";
 
-const chartData = [
-  { browser: "chrome", visitors: 275, fill: "var(--color-chart-1)" },
-  { browser: "safari", visitors: 200, fill: "var(--color-chart-2)" },
-  { browser: "firefox", visitors: 187, fill: "var(--color-chart-3)" },
-];
+const chartData = [];
 
 const chartConfig = {
   visitors: {
-    label: "Visitors",
+    label: "Ocorrências",
   },
   chrome: {
     label: "Ao Norte",
@@ -47,6 +44,30 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function ChartPieDonut() {
+  const { data, isLoading } = useDashboardData();
+
+  if (isLoading) {
+    return (
+      <Card className="flex flex-col bg-transparent border">
+        <CardHeader className="items-center pb-0">
+          <CardTitle>Região</CardTitle>
+          <CardDescription>Carregando dados...</CardDescription>
+        </CardHeader>
+      </Card>
+    );
+  }
+  const filteredChartData =
+    data?.graficoRegiao?.map((item) => ({
+      browser: item.label,
+      visitors: item.value,
+      fill:
+        item.label === "Ao Norte"
+          ? "var(--color-chart-1)"
+          : item.label === "Centro"
+          ? "var(--color-chart-2)"
+          : "var(--color-chart-3)",
+    })) || [];
+
   return (
     <Card className="flex flex-col bg-transparent border">
       <CardHeader className="items-center pb-0">
@@ -64,7 +85,7 @@ export function ChartPieDonut() {
               content={<ChartTooltipContent hideLabel />}
             />
             <Pie
-              data={chartData}
+              data={filteredChartData}
               dataKey="visitors"
               nameKey="browser"
               innerRadius={60}

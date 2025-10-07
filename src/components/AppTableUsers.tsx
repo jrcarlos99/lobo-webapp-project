@@ -21,13 +21,17 @@ import {
 import { Button } from "./ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+import { userService } from "@/services/userService";
+
 export interface User {
   id: string;
-  name: string;
+  nomeCompleto: string;
   email: string;
-  roles: string;
-  status: "active" | "inactive";
+  cargo: string;
+  regiao: string;
+  status: string;
   lastLogin?: string;
+  nip?: string;
 }
 
 interface AppTableUserProps {
@@ -37,50 +41,9 @@ interface AppTableUserProps {
   totalItems: number;
   onPageChange: (page: number) => void;
   onPageSizeChange: (size: number) => void;
+  onEditUser?: (user: User) => void;
+  onDeleteUser?: (userId: string) => void;
 }
-
-// Função que simula dados e que será substituido por chamada a API
-export const generateMockusers = (count: number): User[] => {
-  const firstNames = [
-    "Ana",
-    "João",
-    "Maria",
-    "Pedro",
-    "Carlos",
-    "Juliana",
-    "Fernanda",
-    "Ricardo",
-    "Camila",
-    "Lucas",
-  ];
-  const lastNames = [
-    "Silva",
-    "Santos",
-    "Oliveira",
-    "Souza",
-    "Costa",
-    "Pereira",
-    "Rodrigues",
-    "Almeida",
-    "Carvalho",
-    "Gomes",
-  ];
-  const roles = ["Admin", "Analista", "Chefe"];
-
-  return Array.from({ length: count }, (_, i) => ({
-    id: `user-${i + 1}`,
-    name: `${firstNames[i % firstNames.length]} ${
-      lastNames[i % lastNames.length]
-    }`,
-    email: `user${i + 1}@empresa.com`,
-    roles: roles[i % roles.length],
-
-    status: i % 5 === 0 ? "inactive" : "active",
-    lastLogin: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0],
-  }));
-};
 
 export const AppTableUsers = ({
   users,
@@ -89,8 +52,46 @@ export const AppTableUsers = ({
   totalItems,
   onPageChange,
   onPageSizeChange,
+  onEditUser,
+  onDeleteUser,
 }: AppTableUserProps) => {
   const totalPages = Math.ceil(totalItems / pageSize);
+
+  const handleEdit = (user: User) => {
+    if (onEditUser) {
+      onEditUser(user);
+    }
+  };
+
+  const handleDelete = async (userId: string) => {
+    if (confirm("Tem certeza que deseja deletar este usuário?")) {
+      try {
+        const result = await userService.deleteUser(userId);
+        if (result.success) {
+          if (onDeleteUser) {
+            onDeleteUser(userId);
+          }
+        } else {
+          alert(result.error || "Erro ao deletar usuário");
+        }
+      } catch (error) {
+        console.error("Erro ao deletar usuário:", error);
+        alert("Erro ao deletar usuário");
+      }
+    }
+  };
+
+  const normalizeStatus = (raw?: string) => {
+    const s = String(raw ?? "").toLowerCase();
+    const isInactive =
+      ["inactive", "inativo", "inativos", "inativos", "inativo"].includes(s) ||
+      s === "false";
+    return {
+      label: isInactive ? "Inativo" : "Ativo",
+      isActive: !isInactive,
+    };
+  };
+
   return (
     <div className="space-y-4">
       <div className="border rounded-xl">
@@ -110,10 +111,10 @@ export const AppTableUsers = ({
               users.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell className="font-medium text-center">
-                    {user.name}
+                    {user.nomeCompleto}
                   </TableCell>
                   <TableCell className="text-center">{user.email}</TableCell>
-                  <TableCell className="text-center">{user.roles}</TableCell>
+                  <TableCell className="text-center">{user.cargo}</TableCell>
                   <TableCell className="text-center">
                     <span
                       className="{`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -130,8 +131,8 @@ export const AppTableUsers = ({
                   </TableCell>
                   <TableCell className="text-center">
                     <TableActions
-                      onEdit={() => console.log("Editar:", user.name)}
-                      onDelete={() => console.log("Deletar:", user.name)}
+                      onEdit={() => handleEdit(user)}
+                      onDelete={() => handleDelete(user.id)}
                       // onView={() => console.log("Visualizar:", user.name)}
                     />
                   </TableCell>

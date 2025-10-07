@@ -1,91 +1,84 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { AppDatePicker } from "@/components/AppDatePicker";
 import { InputWithButton } from "@/components/AppInputWithButton";
-import {
-  AppTableUsers,
-  generateMockusers,
-  User,
-} from "@/components/AppTableUsers";
+import { AppTableUsers, User } from "@/components/AppTableUsers";
+
+import { AddUserDialog } from "@/components/AppAddUserDialog";
 import { usePagination } from "@/hooks/usePagination";
-import { UsersResponse } from "@/types/user";
 
 import { useCurrentUser } from "@/hooks/useAuth";
 import { can } from "@/policies/permissions";
 import { redirect } from "next/navigation";
-
-// Simular chamada à API que irei substituir por uma chamada real
-const fetchUsers = async (
-  page: number,
-  pageSize: number,
-  searchTerm?: string
-): Promise<UsersResponse> => {
-  // Simula delay de rede
-  await new Promise((resolve) => setTimeout(resolve, 300));
-
-  const allUsers = generateMockusers(157);
-  const startIndex = (page - 1) * pageSize;
-  const endIndex = startIndex + pageSize;
-
-  const filteredUsers = searchTerm
-    ? allUsers.filter(
-        (user: User) =>
-          user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          user.email.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    : allUsers;
-
-  const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
-
-  return {
-    users: paginatedUsers,
-    totalCount: filteredUsers.length,
-    page,
-    pageSize,
-    totalPages: Math.ceil(filteredUsers.length / pageSize),
-  };
-};
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import { userService } from "@/services/userService";
+import { EditUserDialog } from "@/components/AppEditUserDialog";
 
 const MOCK_INITIAL_PAGE_SIZE = 10;
 
 export default function UsersPage() {
   const { data: currentUser, isLoading: isAuthLoading } = useCurrentUser();
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [editOpen, setEditOpen] = useState(false);
+
+  console.log("Current User:", currentUser);
+  console.log("User Role:", currentUser?.cargo);
 
   // Lógica de Paginação e Busca
-  const userRole = currentUser?.cargo;
 
   const [users, setUsers] = useState<User[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const pagination = usePagination({
     itemsPerPage: MOCK_INITIAL_PAGE_SIZE,
     totalItems: totalCount,
   });
-  // Busca de usuários quando a página ou o search term mudar
+  const handleUserAdded = useCallback(() => {
+    setRefreshTrigger((prev) => prev + 1);
+    pagination.goToPage(1);
+  }, [pagination]);
+
+  const loadUsers = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const result = await userService.getUsers();
+
+      if (result.success && result.data) {
+        const mappped = result.data.map((u: any) => {
+          return {
+            id: String(u.id ?? u._id ?? ""),
+            nomeCompleto:
+              u.nomeCompleto ??
+              u.name ??
+              (u.firstName ? `${u.firstName} ${u.lastName ?? ""}` : ""),
+            email: u.email ?? "",
+            cargo: u.cargo ?? u.perfil ?? u.role ?? "",
+            regiao: u.regiao ?? u.region ?? "",
+            status: u.status ?? (u.active ? "active" : "inactive"),
+            lastLogin: u.lastLogin ?? u.ultimoLogin ?? null,
+            nip: u.nip ?? undefined,
+          } as User;
+        });
+        setUsers(mappped);
+        setTotalCount(mappped.length);
+      } else {
+        console.error("Erro ao carregar usuários:", result.error);
+      }
+    } catch (error) {
+      console.error("Erro ao carregar usuários:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [pagination.currentPage, pagination.pageSize, searchTerm]);
 
   useEffect(() => {
-    const loadUsers = async () => {
-      setIsLoading(true);
-      try {
-        const data = await fetchUsers(
-          pagination.currentPage,
-          pagination.pageSize,
-          searchTerm
-        );
-        setUsers(data.users);
-        setTotalCount(data.totalCount);
-      } catch (error) {
-        console.error("Erro ao carregar usuários:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     loadUsers();
-  }, [pagination.currentPage, pagination.pageSize, searchTerm]);
+  }, [loadUsers, refreshTrigger]);
 
   // Logica de proteção de rota
   if (isAuthLoading) {
@@ -98,10 +91,29 @@ export default function UsersPage() {
     redirect("/dashboard");
   }
 
+  const handleEditUser = (user: User) => {
+    setSelectedUser(user);
+    setEditOpen(true);
+  };
+
+  const handleDeleteUser = (userId: string) => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
   const handleSearch = (term: string) => {
     setSearchTerm(term);
     pagination.goToPage(1);
   };
+
+  const AddButton = (
+    <Button
+      size="lg"
+      className="bg-[var(--color-primary)] text-white hover:bg-[var(--color-secondary-lobo)] whitespace-nowrap"
+    >
+      <Plus className="w-4 h-4 mr-2" />
+      Adicionar
+    </Button>
+  );
 
   const handleAdd = () => console.log("Adicionar usuário (APENAS ADMIN)");
 
@@ -121,6 +133,9 @@ export default function UsersPage() {
           searchTerm={searchTerm}
           onSearchTermChange={setSearchTerm}
           placeholder="Buscar usuários por nome ou email..."
+          addDialog={
+            <AddUserDialog trigger={AddButton} onUserAdded={handleUserAdded} />
+          }
         />
       </div>
 
@@ -131,17 +146,32 @@ export default function UsersPage() {
             <span className="ml-2">Carregando usuários...</span>
           </div>
         ) : (
-          <AppTableUsers
-            users={users}
-            currentPage={pagination.currentPage}
-            pageSize={pagination.pageSize}
-            totalItems={totalCount}
-            onPageChange={pagination.goToPage}
-            onPageSizeChange={(size) => {
-              pagination.setPageSize(size);
-              pagination.goToPage(1);
-            }}
-          />
+          <>
+            <AppTableUsers
+              users={users}
+              currentPage={pagination.currentPage}
+              pageSize={pagination.pageSize}
+              totalItems={totalCount}
+              onPageChange={pagination.goToPage}
+              onPageSizeChange={(size) => {
+                pagination.setPageSize(size);
+                pagination.goToPage(1);
+              }}
+              onEditUser={handleEditUser}
+              onDeleteUser={handleDeleteUser}
+            />
+            <EditUserDialog
+              user={selectedUser}
+              open={editOpen}
+              onOpenChange={(v) => {
+                setEditOpen(v);
+                if (!v) setSelectedUser(null);
+              }}
+              onUserEdited={() => {
+                setRefreshTrigger((prev) => prev + 1);
+              }}
+            />
+          </>
         )}
       </div>
     </div>
