@@ -13,6 +13,7 @@ import React, {
 
 interface AuthContextType {
   token: string | null;
+  role: string | null;
   login: (email: string, senha: string) => Promise<boolean>;
   logout: () => void;
   isAuthenticated: boolean;
@@ -26,6 +27,7 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [token, setToken] = useState<string | null>(null);
+  const [role, setRole] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
@@ -39,9 +41,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         typeof window !== "undefined"
           ? localStorage.getItem("lobo_current_user")
           : null;
+      const storedRole =
+        typeof window !== "undefined" ? localStorage.getItem("userRole") : null;
 
       if (token && user) {
         setToken(token);
+        setRole(storedRole);
         setIsAuthenticated(true);
       }
     };
@@ -54,7 +59,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const user = await authService.login(email, senha);
       if (user) {
         const token = localStorage.getItem("authToken");
+        const storedRole = localStorage.getItem("userRole");
         setToken(token);
+        setRole(storedRole);
         setIsAuthenticated(true);
         return true;
       }
@@ -67,12 +74,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = () => {
     setToken(null);
+    setRole(null);
     setIsAuthenticated(false);
     authService.logout();
   };
 
   const contextValue: AuthContextType = {
     token,
+    role,
     login,
     logout,
     isAuthenticated,
@@ -119,18 +128,14 @@ export const useLogin = () => {
 
   return useMutation<AuthUser, Error, LoginParams>({
     mutationFn: async ({ email, senha }) => {
-      // Chama o login diretamente
       const user = await authService.login(email, senha);
-
       if (!user) {
         throw new Error("Credenciais inválidas");
       }
-
       return user;
     },
 
     onSuccess: (user: AuthUser) => {
-      // Atualiza o cache com o usuário retornado pelo login
       queryClient.setQueryData(["me"], user);
       router.push("/dashboard");
     },
@@ -158,7 +163,6 @@ export const useLogout = () => {
 
     onError: (error) => {
       console.error("Logout error:", error);
-      // Mesmo com erro, limpa a sessão local
       logout();
       queryClient.clear();
       router.push("/auth/login");

@@ -1,17 +1,15 @@
 "use client";
 import { useCurrentUser } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
-import {
-  getDashboardData,
-  DashboardData,
-} from "@/services/ocorrencies.service";
+import { getDashboardData } from "@/services/ocorrencies.service";
+import type { DashboardData } from "@/types/dashboard";
 
 import { AppBarChart } from "@/components/AppBarChart";
 import { AppDatePicker } from "@/components/AppDatePicker";
 import { AppOcorrenciaChart } from "@/components/AppOcorrenciaChart";
-import { ChartPieLabel } from "@/components/AppPieChart";
 import { ChartPieDonut } from "@/components/AppPieChartDonut";
 import { AppSelect } from "@/components/AppSelect";
+import { AppPieChartTurno } from "@/components/AppPieChartTurno";
 
 const HEADER_HEIGHT = 69;
 
@@ -71,7 +69,7 @@ export default function HomePage() {
 
         <div className="bg-primary-foreground p-4 rounded-lg lg:col-span-2 xl:col-span-1 2xl:col-span-1 h-full flex flex-col min-h-0">
           <div className="flex-1 min-h-">
-            <ChartPieLabel />
+            <AppPieChartTurno />
           </div>
         </div>
       </div>

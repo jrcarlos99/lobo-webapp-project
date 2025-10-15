@@ -1,9 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useCurrentUser } from "./useAuth";
-import {
-  getDashboardData,
-  DashboardData,
-} from "@/services/ocorrencies.service";
+import { getDashboardData } from "@/services/ocorrencies.service";
+import { DashboardData } from "@/types/dashboard";
 
 interface UseDashboardDataResult {
   data: DashboardData | undefined;

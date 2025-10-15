@@ -2,13 +2,7 @@
 
 import { Cell, Pie, PieChart } from "recharts";
 import { useDashboardData } from "@/hooks/useDashboardData";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ChartContainer,
   ChartLegend,
@@ -19,44 +13,40 @@ import {
 } from "@/components/ui/chart";
 
 const chartConfig: ChartConfig = {
-  RMR: { label: "RMR", color: "var(--chart-region-rmr)" },
-  ZDMT: { label: "ZDMT", color: "var(--chart-region-zdmt)" },
-  AGRE: { label: "AGRE", color: "var(--chart-region-agre)" },
-  SERTAO: { label: "SERTÃO", color: "var(--chart-region-sertao)" },
+  manha: { label: "Manhã", color: "var(--chart-turno-manha)" },
+  tarde: { label: "Tarde", color: "var(--chart-turno-tarde)" },
+  noite: { label: "Noite", color: "var(--chart-turno-noite)" },
 };
 
-export function ChartPieDonut() {
+export function AppPieChartTurno() {
   const { data, isLoading } = useDashboardData();
 
   if (isLoading) {
     return (
       <Card className="flex flex-col bg-transparent border">
         <CardHeader className="items-center pb-0">
-          <CardTitle>Região</CardTitle>
-          <CardDescription>Carregando dados...</CardDescription>
+          <CardTitle>Turno</CardTitle>
         </CardHeader>
       </Card>
     );
   }
 
   const chartData =
-    data?.graficoRegiao?.map((item) => ({
-      key: item.label,
+    data?.graficoTurno?.map((item) => ({
+      key:
+        item.label === "Manhã"
+          ? "manha"
+          : item.label === "Tarde"
+          ? "tarde"
+          : "noite",
       name: item.label,
       value: item.value,
     })) ?? [];
 
-  const colorByKey: Record<string, string> = {
-    ZDMT: "var(--chart-region-zdmt)",
-    RMR: "var(--chart-region-rmr)",
-    AGRE: "var(--chart-region-agre)",
-  };
-
   return (
     <Card className="flex flex-col bg-transparent border">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Região</CardTitle>
-        <CardDescription>Distribuição por região</CardDescription>
+        <CardTitle>Turno</CardTitle>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
@@ -64,26 +54,21 @@ export function ChartPieDonut() {
           className="mx-auto aspect-square max-h-[250px]"
         >
           <PieChart>
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
-            {/* <Pie
-              data={chartData}
-              dataKey="value"
-              nameKey="name"
-              innerRadius={60}
-            /> */}
+            <ChartTooltip content={<ChartTooltipContent />} />
             <Pie
               data={chartData}
               dataKey="value"
               nameKey="name"
-              innerRadius={60}
+              outerRadius={100}
+              label
             >
               {chartData.map((entry, i) => (
                 <Cell
                   key={`cell-${i}`}
-                  fill={colorByKey[entry.key] ?? "var(--chart-1)"}
+                  fill={
+                    chartConfig[entry.key as keyof typeof chartConfig]?.color ??
+                    "var(--chart-turno-manha)"
+                  }
                 />
               ))}
             </Pie>

@@ -1,15 +1,10 @@
 import axios, { AxiosError, AxiosInstance } from "axios";
 import Cookies from "js-cookie";
 
-const API_BASE_URL = "";
-const PUBLIC_ROUTES = [
-  "/api/ocorrencias",
-  "/api/ocorrencias/dashboard",
-  "/api/auth/login",
-];
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 export const apiClient: AxiosInstance = axios.create({
-  baseURL: "",
+  baseURL: API_BASE_URL,
   withCredentials: false,
   headers: { "Content-Type": "application/json" },
   timeout: 30000,
@@ -18,6 +13,10 @@ export const apiClient: AxiosInstance = axios.create({
 // Request interceptor para autenticação
 apiClient.interceptors.request.use((config) => {
   try {
+    if (config.url?.includes("/auth/login")) {
+      return config;
+    }
+
     let token: string | null = null;
 
     if (typeof window !== "undefined") {

@@ -6,8 +6,8 @@ import { auditService } from "./audit.service";
 export interface NewUserData {
   nomeCompleto: string;
   email: string;
-  perfil: string; // ADMIN, CHEFE, ANALISTA
-  regiao: string; // RMR, AGRE, SERT, ZDMT
+  perfil: string;
+  regiao: string;
   nip?: string;
   senha?: string;
 }
@@ -85,7 +85,6 @@ class UserService {
 
     const roles = (u.roles ?? u.perfil ?? u.role ?? "ANALISTA").toString();
 
-    // region no frontend é do tipo Region — aqui apenas mapeamos a string
     const region = (u.regiao ??
       u.region ??
       undefined) as unknown as User["region"];

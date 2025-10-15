@@ -8,4 +8,5 @@ export type AuthUser = {
   regiaoAutorizada?: string;
   cidadesAutorizadas?: string[];
   id_bombeiro?: number;
+  avatarUrl?: string;
 };

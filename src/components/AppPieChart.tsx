@@ -1,68 +1,50 @@
 "use client";
-
-import { Pie, PieChart, Legend } from "recharts";
-
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  ChartConfig,
   ChartContainer,
   ChartLegend,
   ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
+  type ChartConfig,
 } from "@/components/ui/chart";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { useDashboardData } from "@/hooks/useDashboardData";
 
-export const description = "A pie chart with a label";
+const chartConfig: ChartConfig = {
+  ocorrencias: { label: "Ocorrências", color: "var(--color-chart-1)" },
+};
 
-const chartData = [
-  { browser: "chrome", visitors: 275, fill: "var(--color-chart-1)" },
-  { browser: "safari", visitors: 200, fill: "var(--color-chart-2)" },
-  { browser: "firefox", visitors: 187, fill: "var(--color-chart-3)" },
-];
+export const AppBarChart = () => {
+  const { data, isLoading } = useDashboardData();
 
-const chartConfig = {
-  visitors: {
-    label: "Visitors",
-  },
-  chrome: {
-    label: "Manhã",
-    color: "var(--chart-1)",
-  },
-  safari: {
-    label: "Tarde",
-    color: "var(--chart-2)",
-  },
-  firefox: {
-    label: "Noite",
-    color: "var(--chart-3)",
-  },
-} satisfies ChartConfig;
+  if (isLoading) {
+    return <div>Carregando gráfico de tipos...</div>;
+  }
 
-export function ChartPieLabel() {
+  const chartData =
+    data?.graficoTipo?.map((item) => ({
+      tipo: item.label, // eixo X
+      ocorrencias: item.value, // barra
+    })) ?? [];
+
   return (
-    <Card className="flex flex-col bg-transparent border">
-      <CardHeader className="items-center pb-0">
-        <CardTitle>Turno</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
-      </CardHeader>
-      <CardContent className="flex-1 pb-0">
-        <ChartContainer
-          config={chartConfig}
-          className="[&_.recharts-pie-label-text]:fill-foreground mx-auto aspect-square max-h-[250px] pb-0"
-        >
-          <PieChart>
-            <ChartTooltip content={<ChartTooltipContent hideLabel />} />
-            <Pie data={chartData} dataKey="visitors" label nameKey="browser" />
-            <ChartLegend content={<ChartLegendContent />} />
-          </PieChart>
-        </ChartContainer>
-      </CardContent>
-    </Card>
+    <div>
+      <h1 className="text-lg font-medium mb-6">Tipo</h1>
+      <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+        <BarChart data={chartData}>
+          <CartesianGrid vertical={false} />
+          <XAxis
+            dataKey="tipo"
+            tickLine={false}
+            tickMargin={10}
+            axisLine={false}
+          />
+          <YAxis tickLine={false} tickMargin={10} axisLine={false} />
+          <ChartTooltip content={<ChartTooltipContent />} />
+          <ChartLegend content={<ChartLegendContent />} />
+          <Bar dataKey="ocorrencias" fill="var(--color-chart-1)" radius={4} />
+        </BarChart>
+      </ChartContainer>
+    </div>
   );
-}
+};

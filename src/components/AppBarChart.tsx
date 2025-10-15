@@ -7,47 +7,56 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, Cell, XAxis, YAxis } from "recharts";
+import { useDashboardData } from "@/hooks/useDashboardData";
 
-const chartConfig = {
-  desktop: {
-    label: "Desktop",
-    color: "#2563eb",
-  },
-  mobile: {
-    label: "Mobile",
-    color: "#60a5fa",
-  },
-} satisfies ChartConfig;
-
-const chartData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
-];
+const chartConfig: ChartConfig = {
+  tipo1: { label: "A", color: "var(--chart-tipo-1)" },
+  tipo2: { label: "B", color: "var(--chart-tipo-2)" },
+  tipo3: { label: "C", color: "var(--chart-tipo-3)" },
+  tipo4: { label: "D", color: "var(--chart-tipo-4)" },
+  tipo5: { label: "E", color: "var(--chart-tipo-5)" },
+};
 
 export const AppBarChart = () => {
+  const { data, isLoading } = useDashboardData();
+
+  if (isLoading) {
+    return <div>Carregando gráfico de tipos...</div>;
+  }
+
+  const chartData =
+    data?.graficoTipo?.map((item) => ({
+      tipo: item.label,
+      ocorrencias: item.value,
+    })) ?? [];
+
   return (
-    <div className="">
+    <div>
       <h1 className="text-lg font-medium mb-6">Tipo</h1>
       <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-        <BarChart accessibilityLayer data={chartData}>
+        <BarChart data={chartData}>
           <CartesianGrid vertical={false} />
           <XAxis
-            dataKey="month"
+            dataKey="tipo"
             tickLine={false}
             tickMargin={10}
             axisLine={false}
-            tickFormatter={(value) => value.slice(0, 3)}
           />
           <YAxis tickLine={false} tickMargin={10} axisLine={false} />
           <ChartTooltip content={<ChartTooltipContent />} />
           <ChartLegend content={<ChartLegendContent />} />
-          <Bar dataKey="desktop" fill="var(--color-chart-1)" radius={4} />
-          <Bar dataKey="mobile" fill="var(--color-chart-2)" radius={4} />
+          <Bar dataKey="ocorrencias" radius={4}>
+            {chartData.map((entry, i) => (
+              <Cell
+                key={`cell-${i}`}
+                fill={
+                  chartConfig[entry.tipo as keyof typeof chartConfig]?.color ??
+                  "var(--chart-tipo-1)"
+                }
+              />
+            ))}
+          </Bar>
         </BarChart>
       </ChartContainer>
     </div>

@@ -51,6 +51,25 @@
 
 :root {
   --radius: 0.625rem;
+  /* Base vermelha */
+  --chart-base: oklch(0.4381 0.156 20.76);
+  /* Região (4): RMR, Zona da Mata (ZDMT), AGRE, Sertão */
+  --chart-region-rmr: oklch(0.4381 0.156 20.76 / 0.9);
+  --chart-region-zdmt: oklch(0.4381 0.156 20.76 / 0.75);
+  --chart-region-agre: oklch(0.4381 0.156 20.76 / 0.6);
+  --chart-region-sertao: oklch(0.4381 0.156 20.76 / 0.45);
+  /* Turno (3): Manhã, Tarde, Noite */
+  --chart-turno-manha: oklch(0.4381 0.156 20.76 / 0.85);
+  --chart-turno-tarde: oklch(0.4381 0.156 20.76 / 0.65);
+  --chart-turno-noite: oklch(0.4381 0.156 20.76 / 0.5);
+
+  /* Tipo (5): A–E */
+  --chart-tipo-1: oklch(0.4381 0.156 20.76 / 0.9);
+  --chart-tipo-2: oklch(0.4381 0.156 20.76 / 0.75);
+  --chart-tipo-3: oklch(0.4381 0.156 20.76 / 0.6);
+  --chart-tipo-4: oklch(0.4381 0.156 20.76 / 0.5);
+  --chart-tipo-5: oklch(0.4381 0.156 20.76 / 0.4);
+
   --color-button: oklch(0.4381 0.156 20.76);
   --color-button-hover: oklch(0.4381 0.156 20.76 / 0.9);
   --color-chart-1: oklch(0.4381 0.156 20.76);
@@ -103,6 +122,21 @@
 }
 
 .dark {
+  --chart-region-rmr: oklch(0.4381 0.156 20.76 / 0.95);
+  --chart-region-zdmt: oklch(0.4381 0.156 20.76 / 0.8);
+  --chart-region-agre: oklch(0.4381 0.156 20.76 / 0.65);
+  --chart-region-sertao: oklch(0.4381 0.156 20.76 / 0.55);
+
+  --chart-turno-manha: oklch(0.4381 0.156 20.76 / 0.9);
+  --chart-turno-tarde: oklch(0.4381 0.156 20.76 / 0.75);
+  --chart-turno-noite: oklch(0.4381 0.156 20.76 / 0.6);
+
+  --chart-tipo-1: oklch(0.4381 0.156 20.76 / 0.95);
+  --chart-tipo-2: oklch(0.4381 0.156 20.76 / 0.8);
+  --chart-tipo-3: oklch(0.4381 0.156 20.76 / 0.65);
+  --chart-tipo-4: oklch(0.4381 0.156 20.76 / 0.55);
+  --chart-tipo-5: oklch(0.4381 0.156 20.76 / 0.45);
+
   --background: oklch(0.147 0.004 49.25);
   --foreground: oklch(0.985 0.001 106.423);
   --card: oklch(0.216 0.006 56.043);

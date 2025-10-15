@@ -1,111 +1,166 @@
 import { apiClient } from "@/lib/apiClient";
-import { scopeFiltersFor } from "@/policies/scope";
+
 import type { AuthUser } from "@/types/auth";
 import type { QueryParams } from "@/types/query";
+import type { Occurrence, OccurrenceFilters } from "@/types/occurrence";
+import type { DashboardData } from "@/types/dashboard";
+import { getPreviousRange } from "@/utils/dateRanges";
 
-export interface KPIData {
-  totalOcorrencias: number;
-  porcentagemComparacaoPeriodo: number;
-}
-
-export interface ChartDataItem {
-  label: string;
-  value: number;
-}
-
-export interface DashboardData {
-  kpis: KPIData;
-  graficoRegiao: ChartDataItem[];
-  graficoTipo: ChartDataItem[];
-  graficoTurno: ChartDataItem[];
-}
-
-export type Occurrence = {
-  id_ocorrencia: number;
-  cidade: string;
-  regiao: string;
-  status: string;
-  tipo: string;
-  tipo_ocorrencia: string;
-  descricao?: string;
-  latitude?: number;
-  longitude?: number;
-  data_hora?: string;
+type PageableResponse<T> = {
+  content: T[];
+  pageable: unknown;
+  last: boolean;
+  totalPages: number;
+  totalElements: number;
+  first: boolean;
+  size: number;
+  number: number;
+  sort: unknown;
+  numberOfElements: number;
+  empty: boolean;
 };
+
+export function buildOccurrenceParams(
+  filters: OccurrenceFilters = {}
+): QueryParams {
+  const params: QueryParams = {};
+
+  if (filters.status) params.status = filters.status;
+  if (filters.tipo) params.tipo = filters.tipo;
+  if (filters.cidade) params.cidade = filters.cidade;
+  if (filters.regiao) params.regiao = filters.regiao;
+  if (filters.dataInicio) params.dataInicio = filters.dataInicio;
+  if (filters.dataFim) params.dataFim = filters.dataFim;
+  if (typeof filters.page === "number") params.page = filters.page;
+  if (typeof filters.size === "number") params.size = filters.size;
+  if (filters.sort) params.sort = filters.sort;
+
+  return params;
+}
+const dataInicio = "2025-01-01T00:00:00";
+const dataFim = "2025-12-31T23:59:59";
 
 export const getOccurrencesFor = async (
   currentUser?: AuthUser,
-  extraParams?: QueryParams
+  filters?: OccurrenceFilters
 ): Promise<Occurrence[]> => {
-  const scope: QueryParams = scopeFiltersFor(currentUser);
+  if (!currentUser) return [];
 
-  // Unifica scope + params
-  const params: QueryParams = {
-    ...scope,
-    ...(extraParams ?? {}),
-  };
-
-  // remove keys com valor vazio (''), undefined ou null
-  Object.keys(params).forEach((k) => {
-    const v = (params as Record<string, unknown>)[k];
-    if (
-      v === undefined ||
-      v === null ||
-      (typeof v === "string" && v.trim() === "")
-    ) {
-      delete params[k];
-    }
-  });
-
-  try {
-    const res = await apiClient.get<Occurrence[]>("/api/ocorrencias", {
+  const params = buildOccurrenceParams(filters ?? {});
+  const res = await apiClient.get<PageableResponse<Occurrence> | Occurrence[]>(
+    "/api/ocorrencias",
+    {
       params,
-    });
-    return res.data as Occurrence[];
-  } catch (error) {
-    console.error("Erro ao buscar ocorrências:", error);
-    throw error;
+    }
+  );
+
+  console.log("Resposta bruta de /api/ocorrencias:", res.data);
+
+  if (Array.isArray(res.data)) {
+    return res.data;
   }
+  if (
+    res.data &&
+    Array.isArray((res.data as PageableResponse<Occurrence>).content)
+  ) {
+    return (res.data as PageableResponse<Occurrence>).content;
+  }
+  return [];
 };
 
-export const getDashboardData = async (
-  currentUser?: AuthUser,
-  extraParams?: QueryParams
-): Promise<DashboardData> => {
-  const scope: QueryParams = scopeFiltersFor(currentUser);
-
-  const userFilters: QueryParams = extraParams ?? {};
-
-  const finalCityFilter = scope.cidadeFiltro || userFilters.cidadeFiltro;
-
-  const params: QueryParams = {
-    ...scope,
-    ...userFilters,
-  };
-
-  if (finalCityFilter) {
-    params.cidadeFiltro = finalCityFilter;
-  }
-  delete params.cidades;
-
-  // remove keys com valores vázios ("", undefined ou null)
-
-  Object.keys(params).forEach((k) => {
-    const v = (params as Record<string, unknown>)[k];
-    if (
-      v === undefined ||
-      v === null ||
-      (typeof v === "string" && v.trim() === "")
-    ) {
-      delete params[k];
-    }
+export async function getDashboardData(
+  currentUser: AuthUser
+): Promise<DashboardData> {
+  const occurrences = await getOccurrencesFor(currentUser, {
+    dataInicio,
+    dataFim,
+    size: 1000,
   });
 
-  try {
-    const res = await apiClient.get("/ocorrencias/dashboard", { params });
-    return res.data as DashboardData;
-  } catch (error) {
-    console.error("Erro ao buscar dados do dashboard:", error);
-    throw error;
+  const totalAtual = occurrences.length;
+
+  // 3) Calcule período anterior (mesma duração imediatamente anterior)
+  const { dataInicioAnterior, dataFimAnterior } = getPreviousRange(
+    dataInicio,
+    dataFim
+  );
+
+  const occurrencesAnterior = await getOccurrencesFor(currentUser, {
+    dataInicio: dataInicioAnterior,
+    dataFim: dataFimAnterior,
+    size: 1000,
+  });
+
+  const totalAnterior = occurrencesAnterior.length;
+
+  // 4) Cálculo da variação (%)
+  // regra: se totalAnterior = 0 e totalAtual > 0 → 100%; se ambos 0 → 0%
+  let porcentagemComparacaoPeriodo = 0;
+  if (totalAnterior === 0) {
+    porcentagemComparacaoPeriodo = totalAtual > 0 ? 100 : 0;
+  } else {
+    porcentagemComparacaoPeriodo =
+      ((totalAtual - totalAnterior) / totalAnterior) * 100;
   }
+
+  // Agrupar por região
+  const graficoRegiao = Object.entries(
+    occurrences.reduce<Record<string, number>>((acc, o) => {
+      acc[o.regiao] = (acc[o.regiao] || 0) + 1;
+      return acc;
+    }, {})
+  ).map(([label, value]) => ({ label, value }));
+
+  // Agrupar por tipo
+  const graficoTipo = Object.entries(
+    occurrences.reduce<Record<string, number>>((acc, o) => {
+      acc[o.tipo] = (acc[o.tipo] || 0) + 1;
+      return acc;
+    }, {})
+  ).map(([label, value]) => ({ label, value }));
+
+  // Agrupar por turno
+  const graficoTurno = Object.entries(
+    occurrences.reduce<Record<string, number>>((acc, o) => {
+      const hora = new Date(o.dataHoraAbertura).getHours();
+      let turno = "Noite";
+      if (hora >= 6 && hora < 12) turno = "Manhã";
+      else if (hora >= 12 && hora < 18) turno = "Tarde";
+      acc[turno] = (acc[turno] || 0) + 1;
+      return acc;
+    }, {})
+  ).map(([label, value]) => ({ label, value }));
+
+  return {
+    kpis: { totalOcorrencias: totalAtual, porcentagemComparacaoPeriodo },
+    graficoRegiao,
+    graficoTipo,
+    graficoTurno,
+  };
+}
+
+// Busca ocorrência por ID
+export const getOccurrenceById = async (id: number) => {
+  const res = await apiClient.get(`/api/ocorrencias/${id}`);
+  return res.data;
+};
+
+// Cria nova ocorrência
+export const createOccurrence = async (data: Partial<Occurrence>) => {
+  const res = await apiClient.post("/api/ocorrencias", data);
+  return res.data;
+};
+
+// Atualiza ocorrência existente
+export const updateOccurrence = async (
+  id: number,
+  data: Partial<Occurrence>
+) => {
+  const res = await apiClient.put(`/api/ocorrencias/${id}`, data);
+  return res.data;
+};
+
+// Deleta ocorrência
+export const deleteOccurrence = async (id: number): Promise<void> => {
+  await apiClient.delete(`/api/ocorrencias/${id}`);
 };

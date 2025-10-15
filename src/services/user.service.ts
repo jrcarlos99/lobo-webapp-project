@@ -31,6 +31,6 @@ export const getUsersFor = async (
     }
   });
 
-  const res = await apiClient.get<UserListItem[]>("/usuario", { params });
+  const res = await apiClient.get<UserListItem[]>("/usuarios", { params });
   return res.data;
 };

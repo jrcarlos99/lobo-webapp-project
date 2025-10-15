@@ -1,6 +1,5 @@
 "use client";
 
-import { useMemo, useState } from "react";
 import {
   Table,
   TableBody,
@@ -9,33 +8,20 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { Report } from "@/types/reports";
-import { Regions } from "@/types/reports";
-import { regions, cities } from "@/mocks/locations";
-import type { Occurrence } from "@/services/ocorrencies.service";
+import type { Occurrence } from "@/types/occurrence";
 
-// --- tipos auxiliares para filtros ---
-type FilterPayload = {
-  regionId?: string;
-  cityId?: string;
-};
-
-// --- utilitário para formatar status ---
+// utilitário para formatar status
 function prettyStatus(status?: string) {
   if (!status) return "-";
   const map: Record<string, string> = {
-    novo: "Novo",
-    em_andamento: "Em Andamento",
-    concluido: "Concluído",
-    cancelado: "Cancelado",
+    NOVO: "Novo",
+    EM_ANDAMENTO: "Em Andamento",
+    CONCLUIDO: "Concluído",
+    CANCELADO: "Cancelado",
   };
-  return (
-    map[status] ??
-    status.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
-  );
+  return map[status] ?? status.replace(/_/g, " ").toUpperCase();
 }
 
-// --- componente principal da tabela ---
 export const AppTable = ({ data = [] }: { data?: Occurrence[] }) => {
   return (
     <div className="border rounded-xl overflow-x-auto">
@@ -52,9 +38,9 @@ export const AppTable = ({ data = [] }: { data?: Occurrence[] }) => {
         <TableBody>
           {data.length > 0 ? (
             data.map((occurrence) => (
-              <TableRow key={occurrence.id_ocorrencia}>
+              <TableRow key={occurrence.id}>
                 <TableCell className="font-medium text-center">
-                  {occurrence.id_ocorrencia}
+                  {occurrence.titulo}
                 </TableCell>
                 <TableCell className="text-center">
                   {occurrence.cidade}

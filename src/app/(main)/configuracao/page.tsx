@@ -9,6 +9,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ThemeRadioGroup } from "@/components/AppModoToggle";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
+import { EditableAvatar } from "@/components/AppEditableAvatar";
+import { useAvatarUpload } from "@/hooks/useAvatarUpload";
+import { useCurrentUser } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 
 type ActiveMainSection = "conta" | "tema" | "notificacoes" | "privacidade";
@@ -19,6 +22,22 @@ export default function SettingsPage() {
   const [activeContaSubSection, setActiveContaSubSection] = useState<
     "informacoes" | "preferencias" | "redefinir-senha"
   >("informacoes");
+
+  const { data: currentUser } = useCurrentUser();
+  const { uploadAvatar, isUploading } = useAvatarUpload();
+
+  const handleImageChange = async (file: File) => {
+    await uploadAvatar(file);
+  };
+  const getInitials = (name?: string) => {
+    if (!name) return "US";
+    return name
+      .split(" ")
+      .map((word) => word[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
 
   return (
     <div className="space-y-6">
@@ -35,15 +54,22 @@ export default function SettingsPage() {
             <div className="md:w-64 border-r p-6 space-y-6">
               {/* Perfil do Usuário */}
               <div className="flex flex-col items-center gap-4">
-                <Avatar className="h-24 w-24">
-                  <AvatarImage src="https://github.com/shadcn.png" />
-                  <AvatarFallback>JS</AvatarFallback>
-                </Avatar>
+                <EditableAvatar
+                  src={currentUser?.avatarUrl}
+                  alt={` Avatar de ${currentUser?.nome || "Usuário"}`}
+                  fallback={getInitials(currentUser?.nome)}
+                  onImageChange={handleImageChange}
+                  isUploading={isUploading}
+                />
                 <div className="text-center">
-                  <h2 className="text-xl font-semibold">Juliana Silveira</h2>
-                  <p className="text-sm text-muted-foreground">Administrador</p>
+                  <h2 className="text-xl font-semibold">
+                    {currentUser?.nome || "Usuário"}
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    {currentUser?.cargo || "Cargo não definido"}
+                  </p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Metropolitana - RMR
+                    {currentUser?.regiaoAutorizada || "Região não definida"}
                   </p>
                 </div>
               </div>

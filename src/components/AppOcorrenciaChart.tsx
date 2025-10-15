@@ -22,7 +22,10 @@ export const AppOcorrenciaChart = () => {
 
   const isTrendingDown = comparacao < 0;
   const IconComponent = isTrendingDown ? IconTrendingDown : IconTrendingUp;
-  const comparacaoTexto = `${Math.abs(comparacao)}%`;
+  const comparacaoTexto =
+    comparacao === 0
+      ? "0%"
+      : `${isTrendingDown ? "" : "+"}${Math.abs(comparacao)}%`;
 
   if (isLoading) {
     return (
@@ -46,7 +49,7 @@ export const AppOcorrenciaChart = () => {
           <CardAction>
             <Badge variant="outline">
               <IconTrendingDown />
-              {isTrendingDown ? "-" : "+"}
+              {isTrendingDown}
               {comparacaoTexto}
             </Badge>
           </CardAction>
