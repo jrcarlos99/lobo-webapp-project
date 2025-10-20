@@ -1,77 +1,74 @@
 "use client";
+import { useState } from "react";
 import { useCurrentUser } from "@/hooks/useAuth";
-import { useQuery } from "@tanstack/react-query";
-import { getDashboardData } from "@/services/ocorrencies.service";
-import type { DashboardData } from "@/types/dashboard";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { getOccurrencesFor } from "@/services/ocorrencies.service";
+import { Occurrence, OccurrenceFilters } from "@/types/occurrence";
+import { useDashboardData } from "@/hooks/useDashboardData";
+import { useOccurrenceFilters } from "@/hooks/useOccurrenceFilters";
 
-import { AppBarChart } from "@/components/AppBarChart";
-import { AppDatePicker } from "@/components/AppDatePicker";
-import { AppOcorrenciaChart } from "@/components/AppOcorrenciaChart";
-import { ChartPieDonut } from "@/components/AppPieChartDonut";
-import { AppSelect } from "@/components/AppSelect";
-import { AppPieChartTurno } from "@/components/AppPieChartTurno";
+import DashboardFilters from "@/components/DashboardFilters";
+import DashboardMap from "@/components/DashboardMap";
+import DashboardCharts from "@/components/DashboardCharts";
+
+import { enforceRegionAccess } from "@/utils/enforceRegionAccess";
+import { can } from "@/policies/permissions";
 
 const HEADER_HEIGHT = 69;
 
-export default function HomePage() {
-  const { data: currentUser, isLoading: isUserLoading } = useCurrentUser();
+export default function DashboardPage() {
+  const { data: currentUser } = useCurrentUser();
+  const [filtros, setFiltros] = useState<OccurrenceFilters>({});
+  const filtrosComDefaults = useOccurrenceFilters(filtros);
 
-  const { data: dashboardData, isLoading: isDataLoading } =
-    useQuery<DashboardData>({
-      queryKey: ["dashboard", currentUser],
-      queryFn: () => {
-        return getDashboardData(currentUser!);
-      },
-      enabled: !!currentUser,
-      staleTime: 1000 * 60 * 5,
-    });
+  // Aplica regra de acesso
+  const effectiveFilters = enforceRegionAccess(filtrosComDefaults, currentUser);
 
-  const isLoading = isUserLoading || isDataLoading;
+  // KPIs e dados agregados
+  const { data: dashboardData, isLoading: isDashboardLoading } =
+    useDashboardData(effectiveFilters);
 
-  if (isLoading) {
-    return <div className="p-4">Carregando Dashboard</div>;
-  }
+  // Ocorrências para mapa e select
+  const { data: occurrences = [], isLoading: isOccurrencesLoading } = useQuery<
+    Occurrence[]
+  >({
+    queryKey: [
+      "ocorrencias-dashboard",
+      currentUser?.id_usuario,
+      effectiveFilters,
+    ],
+    queryFn: () =>
+      currentUser
+        ? getOccurrencesFor(currentUser, effectiveFilters)
+        : Promise.resolve([]),
+    enabled: !!currentUser,
+    placeholderData: keepPreviousData,
+  });
 
-  const chartData = dashboardData || {};
+  const isLoading = isDashboardLoading || isOccurrencesLoading;
+  if (isLoading) return <div className="p-4">Carregando Dashboard...</div>;
+
   return (
     <div
       style={{ minHeight: `calc(100vh - ${HEADER_HEIGHT}px)` }}
       className="min-h-0"
     >
       <div className="grid grid-cols-1 lg:grid-cols-3 2xl:grid-cols-4 gap-4 p-4 min-h-0 h-full">
-        <div className="bg-primary-foreground p-4 rounded-lg h-full flex flex-col min-h-0 ">
-          <AppDatePicker />
-          <span className="font-inter text-6xl flex pt-2 font-medium text-[var(--color-text)]">
-            Hoje
-          </span>
-          <AppSelect />
-
-          <div className="flex-1 min-h-0 mt-4">
-            <AppOcorrenciaChart />
-          </div>
-        </div>
-
-        <div className="bg-primary-foreground p-4 rounded-lg lg:col-span-3 xl:col-span-2 2xl:col-span-3 h-full min-h-0">
-          MAPA
-        </div>
-
-        <div className="bg-primary-foreground p-4 rounded-lg h-full flex flex-col min-h-0">
-          <div className="flex-1 min-h-0">
-            <ChartPieDonut />
-          </div>
-        </div>
-
-        <div className="bg-primary-foreground p-4 border rounded-lg lg:col-span-2 xl:col-span-1 2xl:col-span-2 h-full flex flex-col min-h-0">
-          <div className="flex-1 min-h-">
-            <AppBarChart />
-          </div>
-        </div>
-
-        <div className="bg-primary-foreground p-4 rounded-lg lg:col-span-2 xl:col-span-1 2xl:col-span-1 h-full flex flex-col min-h-0">
-          <div className="flex-1 min-h-">
-            <AppPieChartTurno />
-          </div>
-        </div>
+        <DashboardFilters
+          filtros={filtros}
+          setFiltros={setFiltros}
+          occurrences={occurrences}
+          dashboardData={dashboardData}
+          isLoading={isDashboardLoading}
+          currentUser={currentUser}
+          regionDisabled={!can(currentUser?.cargo, "region:all")}
+          fixedRegionLabel={currentUser?.regiaoAutorizada}
+        />
+        <DashboardMap occurrences={occurrences} />
+        <DashboardCharts
+          dashboardData={dashboardData}
+          isLoading={isDashboardLoading}
+        />
       </div>
     </div>
   );

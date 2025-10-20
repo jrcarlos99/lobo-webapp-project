@@ -1,8 +1,8 @@
 export type OccurrenceStatus =
-  | "NOVO"
   | "EM_ANDAMENTO"
-  | "CONCLUIDO"
-  | "CANCELADO";
+  | "ABERTA"
+  | "CANCELADO"
+  | "PENDENTE";
 
 export type OccurrenceType =
   | "INCENDIO"
@@ -24,8 +24,8 @@ export interface Occurrence {
   tipo: OccurrenceType;
   dataHoraAbertura: string;
   dataHoraAtualizacao: string;
-  latitude?: number;
-  longitude?: number;
+  latitude: number;
+  longitude: number;
   historico?: unknown[];
   anexos?: unknown[];
   criadoPor?: string;
@@ -33,13 +33,18 @@ export interface Occurrence {
 }
 
 export interface OccurrenceFilters {
-  status?: OccurrenceStatus;
-  tipo?: OccurrenceType;
-  cidade?: string;
-  regiao?: string;
   dataInicio?: string;
   dataFim?: string;
   page?: number;
   size?: number;
   sort?: string;
+  status?: OccurrenceStatus | OccurrenceStatus[];
+  tipo?:
+    | "INCENDIO"
+    | "ACIDENTE_DE_TRANSITO"
+    | "SALVAMENTO"
+    | "RESGATE"
+    | "VAZAMENTO";
+  cidade?: string;
+  regiao?: "RMR" | "AGRE" | "SERT" | "ZDMT" | "all";
 }

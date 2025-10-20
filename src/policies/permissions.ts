@@ -1,5 +1,5 @@
 export const permissions = {
-  ADMIN: ["users:manage", "occurrence:all", "config:edit"],
+  ADMIN: ["users:manage", "occurrence:all", "config:edit", "region:all"],
   CHEFE: ["occurrence:approve", "occurrence:read", "report:view"],
   ANALISTA: ["occurrence:read", "occurrence:create", "report:view"],
 } as const;

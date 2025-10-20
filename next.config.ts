@@ -2,8 +2,6 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   async rewrites() {
-
-
     return [
       {
         source: "/auth/:path*",
@@ -15,7 +13,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/api/ocorrencias/:path*",
-        destination: "http://localhost:8080/api/ocorrencias/:path*",
+        destination: "http://localhost:8082/api/ocorrencias/:path*",
       },
     ];
   },

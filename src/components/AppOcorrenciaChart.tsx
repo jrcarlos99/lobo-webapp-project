@@ -10,15 +10,17 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
+import { DashboardData } from "@/types/dashboard";
 
-import { useDashboardData } from "@/hooks/useDashboardData";
+type Props = {
+  data?: DashboardData;
+  isLoading?: boolean;
+};
 
-export const AppOcorrenciaChart = () => {
-  const { data, isLoading } = useDashboardData();
-
-  // extrair os dados necessários (usando o fallback para 0)
-  const totalOcorrencias = data?.kpis?.totalOcorrencias ?? 0;
-  const comparacao = data?.kpis?.porcentagemComparacaoPeriodo ?? 0;
+export const AppOcorrenciaChart = ({ data, isLoading }: Props) => {
+  // Agora usamos os campos de topo do DashboardData
+  const totalOcorrencias = data?.totalOcorrencias ?? 0;
+  const comparacao = data?.porcentagemComparacaoPeriodo ?? 0;
 
   const isTrendingDown = comparacao < 0;
   const IconComponent = isTrendingDown ? IconTrendingDown : IconTrendingUp;
@@ -38,6 +40,7 @@ export const AppOcorrenciaChart = () => {
       </div>
     );
   }
+
   return (
     <div className="pt-4">
       <Card className="@container/card bg-transparent border ">
@@ -48,16 +51,15 @@ export const AppOcorrenciaChart = () => {
           </CardTitle>
           <CardAction>
             <Badge variant="outline">
-              <IconTrendingDown />
-              {isTrendingDown}
+              <IconComponent className="mr-1" />
               {comparacaoTexto}
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            {isTrendingDown ? "Down" : "Up"}
-            {comparacaoTexto} esse período <IconComponent className="size-4" />
+            {isTrendingDown ? "Down" : "Up"} {comparacaoTexto} esse período{" "}
+            <IconComponent className="size-4" />
           </div>
           <div className="text-muted-foreground">
             {isTrendingDown

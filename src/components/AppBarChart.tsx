@@ -8,27 +8,35 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, Cell, XAxis, YAxis } from "recharts";
-import { useDashboardData } from "@/hooks/useDashboardData";
+import { DashboardData } from "@/types/dashboard";
 
 const chartConfig: ChartConfig = {
-  tipo1: { label: "A", color: "var(--chart-tipo-1)" },
-  tipo2: { label: "B", color: "var(--chart-tipo-2)" },
-  tipo3: { label: "C", color: "var(--chart-tipo-3)" },
-  tipo4: { label: "D", color: "var(--chart-tipo-4)" },
-  tipo5: { label: "E", color: "var(--chart-tipo-5)" },
+  INCENDIO: { label: "Incêndio", color: "var(--chart-tipo-1)" },
+  ACIDENTE_DE_TRANSITO: {
+    label: "Acidente de Trânsito",
+    color: "var(--chart-tipo-2)",
+  },
+  PRE_HOSPITALAR: { label: "Pré-hospitalar", color: "var(--chart-tipo-3)" },
+  COMUNICACAO: { label: "Comunicação", color: "var(--chart-tipo-4)" },
+  RESGATE: { label: "Resgate", color: "var(--chart-tipo-5)" },
+  // adicione outros tipos conforme necessário
 };
 
-export const AppBarChart = () => {
-  const { data, isLoading } = useDashboardData();
+type Props = {
+  data?: DashboardData;
+  isLoading?: boolean;
+};
 
+export const AppBarChart = ({ data, isLoading }: Props) => {
   if (isLoading) {
     return <div>Carregando gráfico de tipos...</div>;
   }
 
+  // Agora usamos porTipo em vez de graficoTipo
   const chartData =
-    data?.graficoTipo?.map((item) => ({
-      tipo: item.label,
-      ocorrencias: item.value,
+    Object.entries(data?.porTipo ?? {}).map(([tipo, value]) => ({
+      tipo,
+      ocorrencias: value,
     })) ?? [];
 
   return (

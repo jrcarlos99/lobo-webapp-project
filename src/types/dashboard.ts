@@ -9,8 +9,10 @@ export type ChartPoint = {
 };
 
 export type DashboardData = {
-  kpis: KPIData;
-  graficoRegiao: ChartPoint[];
-  graficoTipo: ChartPoint[];
-  graficoTurno: ChartPoint[];
+  totalOcorrencias: number;
+  porcentagemComparacaoPeriodo: number;
+  porStatus: Record<string, number>;
+  porTipo: Record<string, number>;
+  porTurno: Record<string, number>;
+  porRegiao: Record<string, number>;
 };

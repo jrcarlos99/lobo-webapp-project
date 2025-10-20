@@ -33,6 +33,11 @@ const items = [
     icon: House,
   },
   {
+    title: "Ocorrências",
+    url: "/ocorrencia",
+    icon: Folder,
+  },
+  {
     title: "Relatórios",
     url: "/relatorio",
     icon: FileText,

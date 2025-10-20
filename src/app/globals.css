@@ -50,6 +50,11 @@
 }
 
 :root {
+  --color-craque: oklch(70% 0.12 80);
+  --color-gray-light: oklch(0.92 0.01 95);
+  --color-gray: oklch(0.7 0.02 95);
+  --color-prevention: oklch(0.75 0.15 145);
+
   --radius: 0.625rem;
   /* Base vermelha */
   --chart-base: oklch(0.4381 0.156 20.76);
@@ -178,3 +183,7 @@
     @apply bg-background text-foreground;
   }
 }
+
+@import "leaflet/dist/leaflet.css";
+@import "leaflet.markercluster/dist/MarkerCluster.css";
+@import "leaflet.markercluster/dist/MarkerCluster.Default.css";

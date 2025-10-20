@@ -1,7 +1,6 @@
 "use client";
 
 import { Cell, Pie, PieChart } from "recharts";
-import { useDashboardData } from "@/hooks/useDashboardData";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ChartContainer,
@@ -11,6 +10,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
+import { DashboardData } from "@/types/dashboard";
 
 const chartConfig: ChartConfig = {
   manha: { label: "Manhã", color: "var(--chart-turno-manha)" },
@@ -18,9 +18,12 @@ const chartConfig: ChartConfig = {
   noite: { label: "Noite", color: "var(--chart-turno-noite)" },
 };
 
-export function AppPieChartTurno() {
-  const { data, isLoading } = useDashboardData();
+type Props = {
+  data?: DashboardData;
+  isLoading?: boolean;
+};
 
+export function AppPieChartTurno({ data, isLoading }: Props) {
   if (isLoading) {
     return (
       <Card className="flex flex-col bg-transparent border">
@@ -31,16 +34,12 @@ export function AppPieChartTurno() {
     );
   }
 
+  // Agora usamos porTurno em vez de graficoTurno
   const chartData =
-    data?.graficoTurno?.map((item) => ({
-      key:
-        item.label === "Manhã"
-          ? "manha"
-          : item.label === "Tarde"
-          ? "tarde"
-          : "noite",
-      name: item.label,
-      value: item.value,
+    Object.entries(data?.porTurno ?? {}).map(([key, value]) => ({
+      key: key.toLowerCase(), // "Manhã" -> "manha"
+      name: key,
+      value,
     })) ?? [];
 
   return (

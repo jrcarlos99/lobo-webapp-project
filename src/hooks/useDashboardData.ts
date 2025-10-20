@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useCurrentUser } from "./useAuth";
 import { getDashboardData } from "@/services/ocorrencies.service";
 import { DashboardData } from "@/types/dashboard";
+import { OccurrenceFilters } from "@/types/occurrence";
 
 interface UseDashboardDataResult {
   data: DashboardData | undefined;
@@ -9,17 +10,31 @@ interface UseDashboardDataResult {
   isError: boolean;
 }
 
-export function useDashboardData(): UseDashboardDataResult {
+export function useDashboardData(
+  filtros?: OccurrenceFilters
+): UseDashboardDataResult {
   const { data: currentUser } = useCurrentUser();
 
   const { data, isLoading, isError } = useQuery<DashboardData>({
     queryKey: [
       "dashboard",
       currentUser?.cargo,
-      currentUser?.cidadesAutorizadas,
+      currentUser?.regiaoAutorizada,
+      filtros,
     ],
     queryFn: () => {
-      return getDashboardData(currentUser!);
+      if (!currentUser) {
+        throw new Error("Usuário não autenticado");
+      }
+
+      const appliedFilters: OccurrenceFilters = { ...filtros };
+
+      if (currentUser.cargo !== "ADMIN" && currentUser.regiaoAutorizada) {
+        appliedFilters.regiao =
+          currentUser.regiaoAutorizada as OccurrenceFilters["regiao"];
+      }
+
+      return getDashboardData(currentUser, appliedFilters);
     },
     enabled: !!currentUser,
     staleTime: 1000 * 60 * 5,

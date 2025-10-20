@@ -1,18 +1,17 @@
 "use client";
 
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState, Dispatch, SetStateAction } from "react";
 import { useCurrentUser } from "@/hooks/useAuth";
-import type { QueryParams } from "@/types/query";
 import { can } from "@/policies/permissions";
+import type { OccurrenceFilters } from "@/types/occurrence";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-
-import type { OccurrenceFilters } from "@/types/occurrence";
+} from "./ui/select";
+import { regioes, statusList, tipos } from "@/constants/occurrenceOptions";
 
 interface AppFilterProps {
   cidadesAutorizadas: string[];
@@ -32,6 +31,7 @@ export const AppFilter = ({
   const [selectedType, setSelectedType] = useState<string | undefined>();
   const [selectedCity, setSelectedCity] = useState<string | undefined>();
   const [selectedStatus, setSelectedStatus] = useState<string | undefined>();
+  const [selectedRegion, setSelectedRegion] = useState<string | undefined>();
 
   // força cidade se usuário não pode ver todas
   useEffect(() => {
@@ -52,16 +52,23 @@ export const AppFilter = ({
 
   // aplica filtros
   useEffect(() => {
-    const newFilters: QueryParams = {};
+    const newFilters: OccurrenceFilters = {};
+
+    if (selectedRegion) {
+      newFilters.regiao = selectedRegion as OccurrenceFilters["regiao"];
+    }
 
     if (selectedCity && selectedCity !== "all") {
       newFilters.cidade = selectedCity;
     }
     if (selectedType && selectedType !== "all") {
-      newFilters.tipo = selectedType.toUpperCase();
+      newFilters.tipo = selectedType.toUpperCase() as OccurrenceFilters["tipo"];
     }
     if (selectedStatus && selectedStatus !== "all") {
-      newFilters.status = selectedStatus; // já vem no formato certo
+      newFilters.status = selectedStatus as OccurrenceFilters["status"];
+    } else {
+      // usa só os status que já existem no backend
+      newFilters.status = ["EM_ANDAMENTO", "ABERTA", "CANCELADO", "PENDENTE"];
     }
 
     // traduz período em dataInicio/dataFim
@@ -87,67 +94,58 @@ export const AppFilter = ({
       newFilters.dataFim = hoje.toISOString().split("T")[0] + "T23:59:59";
     }
 
+    console.log("Filtros do AppFilter:", newFilters);
     onFilterChange(newFilters);
   }, [
     selectedPeriod,
     selectedType,
     selectedCity,
     selectedStatus,
+    selectedRegion,
     onFilterChange,
   ]);
 
   return (
     <div className="flex flex-col sm:flex-row space-x-0 sm:space-x-4 xl:space-x-4 pt-4 gap-4">
-      {/* Dropdown Período */}
+      {/* Período */}
       <Select onValueChange={setSelectedPeriod} value={selectedPeriod}>
-        <SelectTrigger className="font-inter w-full">
+        <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Período" />
         </SelectTrigger>
-        <SelectContent className="font-inter">
+        <SelectContent>
+          <SelectItem value="all">Todos</SelectItem>
           <SelectItem value="today">Hoje</SelectItem>
           <SelectItem value="yesterday">Ontem</SelectItem>
           <SelectItem value="last7days">Últimos 7 dias</SelectItem>
           <SelectItem value="last30days">Últimos 30 dias</SelectItem>
-          <SelectItem value="lastmonth">Mês Anterior</SelectItem>
+          <SelectItem value="lastmonth">Mês passado</SelectItem>
         </SelectContent>
       </Select>
 
-      {/* Dropdown Tipo */}
+      {/* Tipo */}
       <Select onValueChange={setSelectedType} value={selectedType}>
-        <SelectTrigger className="font-inter bg-stone-5 w-full">
+        <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Tipo" />
         </SelectTrigger>
-        <SelectContent className="font-inter">
-          <SelectItem value="all">Todos os Tipos</SelectItem>
-          <SelectItem value="INCENDIO">Incêndios</SelectItem>
-          <SelectItem value="ACIDENTE_DE_TRANSITO">Acidente</SelectItem>
+        <SelectContent>
+          <SelectItem value="all">Todos</SelectItem>
+          <SelectItem value="INCENDIO">Incêndio</SelectItem>
+          <SelectItem value="ACIDENTE_DE_TRANSITO">
+            Acidente de Trânsito
+          </SelectItem>
           <SelectItem value="SALVAMENTO">Salvamento</SelectItem>
           <SelectItem value="RESGATE">Resgate</SelectItem>
-          <SelectItem value="PRE_HOSPITALAR">Pré Hospitalar</SelectItem>
-          <SelectItem value="EPI">EPI</SelectItem>
-          <SelectItem value="COMUNICACAO">Comunicação</SelectItem>
+          <SelectItem value="VAZAMENTO">Vazamento</SelectItem>
         </SelectContent>
       </Select>
 
-      {/* Dropdown Cidade */}
-      <Select
-        onValueChange={setSelectedCity}
-        value={selectedCity}
-        disabled={!canSeeAllRegions && cidadesAutorizadas.length <= 1}
-      >
-        <SelectTrigger className="font-inter bg-stone-5 w-full">
-          <SelectValue
-            placeholder={
-              !canSeeAllRegions && cidadesAutorizadas.length === 1
-                ? cidadesAutorizadas[0]
-                : "Cidade"
-            }
-          />
+      {/* Cidade */}
+      <Select onValueChange={setSelectedCity} value={selectedCity}>
+        <SelectTrigger className="w-[180px]">
+          <SelectValue placeholder="Cidade" />
         </SelectTrigger>
-        <SelectContent className="font-inter">
-          {canSeeAllRegions && (
-            <SelectItem value="all">Todas as Cidades</SelectItem>
-          )}
+        <SelectContent>
+          <SelectItem value="all">Todas</SelectItem>
           {cidadesAutorizadas.map((cidade) => (
             <SelectItem key={cidade} value={cidade}>
               {cidade}
@@ -156,19 +154,42 @@ export const AppFilter = ({
         </SelectContent>
       </Select>
 
-      {/* Dropdown Status */}
+      {/* Status */}
       <Select onValueChange={setSelectedStatus} value={selectedStatus}>
-        <SelectTrigger className="font-inter bg-stone-5 w-full">
+        <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Status" />
         </SelectTrigger>
-        <SelectContent className="font-inter">
-          <SelectItem value="all">Todos os Status</SelectItem>
-          <SelectItem value="NOVO">Novo</SelectItem>
-          <SelectItem value="EM_ANDAMENTO">Em andamento</SelectItem>
-          <SelectItem value="CONCLUIDO">Concluído</SelectItem>
+        <SelectContent>
+          <SelectItem value="all">Todos</SelectItem>
+          <SelectItem value="PENDENTE">Pendente</SelectItem>
+          <SelectItem value="EM_ANDAMENTO">Em Andamento</SelectItem>
+          <SelectItem value="ABERTA">Aberta</SelectItem>
           <SelectItem value="CANCELADO">Cancelado</SelectItem>
         </SelectContent>
       </Select>
+
+      {/* Região */}
+      {canSeeAllRegions ? (
+        <Select onValueChange={setSelectedRegion} value={selectedRegion}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Região" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todas</SelectItem>
+            {regioes.map((r) => (
+              <SelectItem key={r.value} value={r.value}>
+                {r.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      ) : (
+        <div className="w-[180px] flex items-center px-3 py-2 border-rounded">
+          <span className="text-sm">
+            {currentUser?.regiaoAutorizada ?? "Região não definida"}
+          </span>
+        </div>
+      )}
     </div>
   );
 };
