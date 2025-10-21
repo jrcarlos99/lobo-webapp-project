@@ -90,20 +90,23 @@ const withPWAFinal = withPWA({
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   async rewrites() {
-    return [
-      {
-        source: "/auth/:path*",
-        destination: "http://localhost:8080/auth/:path*",
-      },
-      {
-        source: "/usuarios/:path*",
-        destination: "http://localhost:8080/usuarios/:path*",
-      },
-      {
-        source: "/api/ocorrencias/:path*",
-        destination: "http://localhost:8082/api/ocorrencias/:path*",
-      },
-    ];
+    if (process.env.NODE_ENV === "development") {
+      return [
+        {
+          source: "/auth/:path*",
+          destination: "http://localhost:8080/auth/:path*",
+        },
+        {
+          source: "/usuarios/:path*",
+          destination: "http://localhost:8080/usuarios/:path*",
+        },
+        {
+          source: "/api/ocorrencias/:path*",
+          destination: "http://localhost:8082/api/ocorrencias/:path*",
+        },
+      ];
+    }
+    return [];
   },
 };
 

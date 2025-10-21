@@ -1,10 +1,11 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
 import MarkerClusterGroup from "react-leaflet-cluster";
+import L from "leaflet";
 import { Occurrence } from "@/types/occurrence";
+import "leaflet/dist/leaflet.css";
 
 // Corrige o bug do ícone padrão do Leaflet no React
 const DefaultIcon = L.icon({
@@ -20,8 +21,18 @@ type AppMapaProps = {
 };
 
 export default function AppMapa({ occurrences }: AppMapaProps) {
+  const [mounted, setMounted] = useState(false);
+
+  // Garante que só renderiza no cliente
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
   return (
     <MapContainer
+      key="main-map"
       center={[-8.05, -34.9]}
       zoom={7}
       style={{ height: "100%", width: "100%" }}
