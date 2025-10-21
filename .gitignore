@@ -17,6 +17,12 @@
 /.next/
 /out/
 
+# Arquivos gerados pelo next-pwa
+public/sw.js
+public/workbox-*.js
+public/fallback-*.js
+
+
 # production
 /build
 

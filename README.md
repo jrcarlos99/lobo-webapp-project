@@ -1,36 +1,97 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# L.O.B.O - Sistema de Gestão de Ocorrências
 
-## Getting Started
+## 📋 Sobre o Projeto
 
-First, run the development server:
+L.O.B.O é uma aplicação web moderna para gestão e monitoramento de ocorrências, desenvolvida com Next.js 13+. O sistema permite o registro, acompanhamento e análise de ocorrências em diferentes regiões, com suporte a múltiplos níveis de acesso e visualização de dados em tempo real.
+
+## 🚀 Tecnologias
+
+- [Next.js 13+](https://nextjs.org/)
+- [React](https://reactjs.org/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- PWA (Progressive Web App)
+
+## ✨ Funcionalidades
+
+- 📊 Dashboard interativo com gráficos e mapas
+- 👥 Gestão de usuários com diferentes níveis de acesso
+- 📍 Mapeamento geográfico de ocorrências
+- 📱 Interface responsiva e PWA
+- 🔒 Autenticação e autorização baseada em roles
+- 📈 Relatórios e análises
+- 🗺️ Filtros por região e período
+
+## 🛠️ Instalação
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Clone o repositório
+git clone https://github.com/jrcarlos99/lobo-webapp-project.git
+
+# Entre no diretório
+cd lobo-webapp-project
+
+# Instale as dependências
+npm install
+
+# Configure as variáveis de ambiente
+cp .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Executando o Projeto
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+# Desenvolvimento
+npm run dev
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Produção
+npm run build
+npm start
+```
 
-## Learn More
+A aplicação estará disponível em: `http://localhost:3000`
 
-To learn more about Next.js, take a look at the following resources:
+## 📁 Estrutura do Projeto
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+src/
+├── app/                    # Rotas e layouts (Next.js App Router)
+├── components/            # Componentes React reutilizáveis
+├── hooks/                # Hooks personalizados
+├── lib/                  # Utilitários e configurações
+├── services/            # Serviços de API
+└── types/               # Definições de tipos TypeScript
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🔐 Permissões e Roles
 
-## Deploy on Vercel
+O sistema possui diferentes níveis de acesso:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Administrador**: Acesso total ao sistema
+- **Chefe**: Gestão de ocorrências e relatórios
+- **Analista**: Registro e acompanhamento de ocorrências
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📱 PWA
+
+A aplicação é uma Progressive Web App (PWA), permitindo:
+
+- Instalação no dispositivo
+- Funcionamento offline
+- Notificações push
+- Atualização automática
+
+## 🤝 Contribuindo
+
+1. Faça um fork do projeto
+2. Crie sua branch de feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
+
+## 📝 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+## 👨‍💻 Autor
+
+- [Júnior Carlos](https://github.com/jrcarlos99)

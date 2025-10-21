@@ -30,7 +30,7 @@ type Props = {
   isLoading?: boolean;
 };
 
-export function ChartPieDonut({ data, isLoading }: Props) {
+export default function ChartPieDonut({ data, isLoading }: Props) {
   if (isLoading) {
     return (
       <Card className="flex flex-col bg-transparent border">

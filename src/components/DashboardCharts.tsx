@@ -1,8 +1,18 @@
 "use client";
-import { AppBarChart } from "@/components/AppBarChart";
-import { ChartPieDonut } from "@/components/AppPieChartDonut";
-import { AppPieChartTurno } from "@/components/AppPieChartTurno";
+
 import { DashboardData } from "@/types/dashboard";
+import dynamic from "next/dynamic";
+
+const ChartPieDonut = dynamic(() => import("@/components/AppPieChartDonut"), {
+  ssr: false,
+});
+const AppBarChart = dynamic(() => import("@/components/AppBarChart"), {
+  ssr: false,
+});
+const AppPieChartTurno = dynamic(
+  () => import("@/components/AppPieChartTurno"),
+  { ssr: false }
+);
 
 type Props = {
   dashboardData?: DashboardData;

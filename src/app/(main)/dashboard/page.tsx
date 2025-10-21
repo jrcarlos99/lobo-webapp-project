@@ -8,11 +8,18 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 import { useOccurrenceFilters } from "@/hooks/useOccurrenceFilters";
 
 import DashboardFilters from "@/components/DashboardFilters";
-import DashboardMap from "@/components/DashboardMap";
-import DashboardCharts from "@/components/DashboardCharts";
+
+import dynamic from "next/dynamic";
 
 import { enforceRegionAccess } from "@/utils/enforceRegionAccess";
 import { can } from "@/policies/permissions";
+
+const DashboardMap = dynamic(() => import("@/components/DashboardMap"), {
+  ssr: false,
+});
+const DashboardCharts = dynamic(() => import("@/components/DashboardCharts"), {
+  ssr: false,
+});
 
 const HEADER_HEIGHT = 69;
 

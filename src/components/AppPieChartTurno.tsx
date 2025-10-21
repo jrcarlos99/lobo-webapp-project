@@ -23,7 +23,7 @@ type Props = {
   isLoading?: boolean;
 };
 
-export function AppPieChartTurno({ data, isLoading }: Props) {
+export default function AppPieChartTurno({ data, isLoading }: Props) {
   if (isLoading) {
     return (
       <Card className="flex flex-col bg-transparent border">

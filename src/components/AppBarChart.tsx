@@ -27,7 +27,7 @@ type Props = {
   isLoading?: boolean;
 };
 
-export const AppBarChart = ({ data, isLoading }: Props) => {
+export default function AppBarChart({ data, isLoading }: Props) {
   if (isLoading) {
     return <div>Carregando gráfico de tipos...</div>;
   }
@@ -69,4 +69,4 @@ export const AppBarChart = ({ data, isLoading }: Props) => {
       </ChartContainer>
     </div>
   );
-};
+}

@@ -19,7 +19,7 @@ type AppMapaProps = {
   occurrences: Occurrence[];
 };
 
-export function AppMapa({ occurrences }: AppMapaProps) {
+export default function AppMapa({ occurrences }: AppMapaProps) {
   return (
     <MapContainer
       center={[-8.05, -34.9]}

@@ -1,6 +1,8 @@
 "use client";
-import { AppMapa } from "@/components/AppMapa";
+import dynamic from "next/dynamic";
 import { Occurrence } from "@/types/occurrence";
+
+const AppMapa = dynamic(() => import("@/components/AppMapa"), { ssr: false });
 
 type Props = {
   occurrences: Occurrence[];
