@@ -8,14 +8,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { OccurrenceDetailsModal } from "@/components/OccurrenceDetailsModal";
+
 import type { Occurrence } from "@/types/occurrence";
-import {
-  mapStatusToLabel,
-  mapTipoToLabel,
-  mapRegiaoToLabel,
-} from "@/constants/occurrenceOptions";
-import { useState } from "react";
 
 function formatDate(iso?: string) {
   if (!iso) return "-";
@@ -70,9 +64,7 @@ export const AppTable = ({
                   {occurrence.status}
                 </TableCell>
                 <TableCell className="text-center">
-                  {new Date(occurrence.dataHoraAbertura!).toLocaleString(
-                    "pt-BR"
-                  )}
+                  {formatDate(occurrence.dataHoraAbertura)}
                 </TableCell>
               </TableRow>
             ))

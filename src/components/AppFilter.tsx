@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { regioes, statusList, tipos } from "@/constants/occurrenceOptions";
+import { regioes } from "@/constants/occurrenceOptions";
 
 interface AppFilterProps {
   cidadesAutorizadas: string[];
@@ -48,7 +48,7 @@ export const AppFilter = ({
     } else if (canSeeAllRegions && selectedCity === cidadesAutorizadas[0]) {
       setSelectedCity(undefined);
     }
-  }, [canSeeAllRegions, cidadesAutorizadas, onFilterChange]);
+  }, [canSeeAllRegions, cidadesAutorizadas, onFilterChange, selectedCity]);
 
   // aplica filtros
   useEffect(() => {

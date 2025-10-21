@@ -15,4 +15,5 @@ export type DashboardData = {
   porTipo: Record<string, number>;
   porTurno: Record<string, number>;
   porRegiao: Record<string, number>;
+  graficoTipo?: ChartPoint[];
 };

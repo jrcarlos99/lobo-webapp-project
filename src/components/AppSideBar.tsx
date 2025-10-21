@@ -58,10 +58,6 @@ export const AppSidebar = () => {
   const { data: currentUser } = useCurrentUser();
   const userRole = currentUser?.cargo;
 
-  const canAccessSettings = true;
-  const isSettingsLinkDisabled = false;
-  const settingsTooltipMessage = undefined;
-
   // Determina permissão
   const canManageUsers = can(userRole, "users:manage");
 

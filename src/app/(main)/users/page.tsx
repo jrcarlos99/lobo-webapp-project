@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { userService } from "@/services/userService";
 import { EditUserDialog } from "@/components/AppEditUserDialog";
+import { ApiUser } from "@/types/user";
 
 const MOCK_INITIAL_PAGE_SIZE = 10;
 
@@ -22,11 +23,6 @@ export default function UsersPage() {
   const { data: currentUser, isLoading: isAuthLoading } = useCurrentUser();
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [editOpen, setEditOpen] = useState(false);
-
-  console.log("Current User:", currentUser);
-  console.log("User Role:", currentUser?.cargo);
-
-  // Lógica de Paginação e Busca
 
   const [users, setUsers] = useState<User[]>([]);
   const [totalCount, setTotalCount] = useState(0);
@@ -38,6 +34,7 @@ export default function UsersPage() {
     itemsPerPage: MOCK_INITIAL_PAGE_SIZE,
     totalItems: totalCount,
   });
+
   const handleUserAdded = useCallback(() => {
     setRefreshTrigger((prev) => prev + 1);
     pagination.goToPage(1);
@@ -49,7 +46,7 @@ export default function UsersPage() {
       const result = await userService.getUsers();
 
       if (result.success && result.data) {
-        const mappped = result.data.map((u: any) => {
+        const mapped = result.data.map((u: ApiUser): User => {
           return {
             id: String(u.id ?? u._id ?? ""),
             nomeCompleto:
@@ -64,8 +61,8 @@ export default function UsersPage() {
             nip: u.nip ?? undefined,
           } as User;
         });
-        setUsers(mappped);
-        setTotalCount(mappped.length);
+        setUsers(mapped);
+        setTotalCount(mapped.length);
       } else {
         console.error("Erro ao carregar usuários:", result.error);
       }
@@ -74,19 +71,18 @@ export default function UsersPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [pagination.currentPage, pagination.pageSize, searchTerm]);
+  }, []); // ✅ dependências removidas
 
   useEffect(() => {
     loadUsers();
   }, [loadUsers, refreshTrigger]);
 
-  // Logica de proteção de rota
+  // Proteção de rota
   if (isAuthLoading) {
     return <div>Carregando perfil...</div>;
   }
 
   const canAccessPage = can(currentUser?.cargo, "users:manage");
-
   if (!canAccessPage) {
     redirect("/dashboard");
   }
@@ -96,7 +92,8 @@ export default function UsersPage() {
     setEditOpen(true);
   };
 
-  const handleDeleteUser = (userId: string) => {
+  const handleDeleteUser = () => {
+    // ✅ parâmetro removido
     setRefreshTrigger((prev) => prev + 1);
   };
 
@@ -118,15 +115,15 @@ export default function UsersPage() {
   const handleAdd = () => console.log("Adicionar usuário (APENAS ADMIN)");
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-1 2xl:grid-cols-1 gap-4">
-      <div className="bg-primary-foreground p-4 rounded-lg ">
+    <div className="grid grid-cols-1 gap-4">
+      <div className="bg-primary-foreground p-4 rounded-lg">
         <AppDatePicker />
         <span className="font-inter text-4xl sm:text-5xl lg:text-6xl flex pt-2 font-medium text-[var(--color-text)]">
           Usuários
         </span>
       </div>
 
-      <div className="bg-white p-4 rounded-lg shadow-sm flex flex-col md:flex-col items center gap-4">
+      <div className="bg-white p-4 rounded-lg shadow-sm flex flex-col gap-4">
         <InputWithButton
           onSearch={handleSearch}
           onAdd={handleAdd}

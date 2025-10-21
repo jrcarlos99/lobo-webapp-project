@@ -12,12 +12,23 @@ export interface User {
 }
 
 export interface ApiUser {
-  id: number;
-  nomeCompleto: string;
-  email: string;
-  perfil: string;
-  regiao: string | null;
-  ultimoLogin?: string;
+  id?: string | number;
+  _id?: string | number;
+  nomeCompleto?: string;
+  name?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  cargo?: string;
+  perfil?: string;
+  role?: string;
+  regiao?: string;
+  region?: string;
+  status?: string;
+  active?: boolean;
+  lastLogin?: string | null;
+  ultimoLogin?: string | null;
+  nip?: string;
 }
 
 export interface UsersResponse {
@@ -26,6 +37,14 @@ export interface UsersResponse {
   page: number;
   pageSize: number;
   totalPages: number;
+}
+
+export interface CurrentUser {
+  id?: string;
+  nome?: string;
+  email?: string;
+  avatarUrl?: string;
+  // adicione outros campos que você sabe que existem
 }
 
 export type LogDetail =

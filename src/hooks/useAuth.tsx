@@ -31,36 +31,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    // Verifica autenticação ao inicializar
-    const checkAuth = () => {
-      const token =
-        typeof window !== "undefined"
-          ? localStorage.getItem("authToken")
-          : null;
-      const user =
-        typeof window !== "undefined"
-          ? localStorage.getItem("lobo_current_user")
-          : null;
-      const storedRole =
-        typeof window !== "undefined" ? localStorage.getItem("userRole") : null;
+    const storedToken = localStorage.getItem("authToken");
+    const storedRole = localStorage.getItem("userRole");
+    const user = localStorage.getItem("lobo_current_user");
 
-      if (token && user) {
-        setToken(token);
-        setRole(storedRole);
-        setIsAuthenticated(true);
-      }
-    };
-
-    checkAuth();
+    if (storedToken && user) {
+      setToken(storedToken);
+      setRole(storedRole);
+      setIsAuthenticated(true);
+    }
   }, []);
 
   const login = async (email: string, senha: string): Promise<boolean> => {
     try {
       const user = await authService.login(email, senha);
       if (user) {
-        const token = localStorage.getItem("authToken");
+        const storedToken = localStorage.getItem("authToken");
         const storedRole = localStorage.getItem("userRole");
-        setToken(token);
+        setToken(storedToken);
         setRole(storedRole);
         setIsAuthenticated(true);
         return true;
@@ -76,43 +64,44 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setToken(null);
     setRole(null);
     setIsAuthenticated(false);
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("lobo_current_user");
     authService.logout();
   };
 
-  const contextValue: AuthContextType = {
-    token,
-    role,
-    login,
-    logout,
-    isAuthenticated,
-  };
-
   return (
-    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
+    <AuthContext.Provider
+      value={{ token, role, login, logout, isAuthenticated }}
+    >
+      {children}
+    </AuthContext.Provider>
   );
 };
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
 
-// Tipos para as mutations
-type LoginParams = {
-  email: string;
-  senha: string;
-};
-
 // Hook para usuário atual
 export const useCurrentUser = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
 
   return useQuery<AuthUser | null>({
     queryKey: ["me"],
-    queryFn: authService.me,
+    queryFn: async () => {
+      try {
+        return await authService.me();
+      } catch (err) {
+        console.error("Erro ao buscar usuário atual:", err);
+        logout(); // token inválido → força logout
+        return null;
+      }
+    },
     enabled: isAuthenticated,
     retry: false,
     staleTime: 1000 * 60 * 5,
@@ -126,22 +115,14 @@ export const useLogin = () => {
   const { login } = useAuth();
   const router = useRouter();
 
-  return useMutation<AuthUser, Error, LoginParams>({
-    mutationFn: async ({ email, senha }) => {
-      const user = await authService.login(email, senha);
-      if (!user) {
-        throw new Error("Credenciais inválidas");
+  return useMutation({
+    mutationFn: ({ email, senha }: { email: string; senha: string }) =>
+      login(email, senha),
+    onSuccess: (success) => {
+      if (success) {
+        queryClient.invalidateQueries({ queryKey: ["me"] });
+        router.push("/dashboard");
       }
-      return user;
-    },
-
-    onSuccess: (user: AuthUser) => {
-      queryClient.setQueryData(["me"], user);
-      router.push("/dashboard");
-    },
-
-    onError: (error) => {
-      console.error("Login mutation error:", error);
     },
   });
 };
@@ -152,18 +133,9 @@ export const useLogout = () => {
   const { logout } = useAuth();
   const router = useRouter();
 
-  return useMutation<void, Error, void>({
-    mutationFn: authService.logout,
-
+  return useMutation({
+    mutationFn: async () => logout(),
     onSuccess: () => {
-      logout();
-      queryClient.clear();
-      router.push("/auth/login");
-    },
-
-    onError: (error) => {
-      console.error("Logout error:", error);
-      logout();
       queryClient.clear();
       router.push("/auth/login");
     },

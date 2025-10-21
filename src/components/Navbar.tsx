@@ -2,7 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Badge } from "@/components/ui/badge";
-import { Bell, Settings } from "lucide-react";
+import { Bell } from "lucide-react";
 import { Button } from "./ui/button";
 import {
   SidebarGroup,
@@ -13,7 +13,7 @@ import {
 } from "./ui/sidebar";
 import { useCurrentUser, useLogout } from "@/hooks/useAuth";
 import { Skeleton } from "@/components/ui/skeleton";
-import Link from "next/link";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,7 +21,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@radix-ui/react-dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 
 export const Navbar = () => {
   const { data: currentUser, isLoading } = useCurrentUser();
@@ -54,23 +54,37 @@ export const Navbar = () => {
             <SidebarMenu>
               <SidebarMenuItem>
                 <div className="flex items-center gap-3 px-2 py-0.5">
-                  {/* Avatar */}
-                  <Avatar>
-                    <AvatarImage
-                      className="size-8 rounded-xl"
-                      src={currentUser?.avatarUrl}
-                      alt={`Avatar de ${currentUser?.nome || "Usuário"}`}
-                    />
-                    <AvatarFallback className="rounded-xl bg-muted">
-                      {isLoading ? (
-                        <Skeleton className="h-8 w-8 rounded-xl" />
-                      ) : currentUser ? (
-                        getInitials(currentUser.nome)
-                      ) : (
-                        "US"
-                      )}
-                    </AvatarFallback>
-                  </Avatar>
+                  {/* Avatar + Dropdown */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Avatar className="cursor-pointer">
+                        <AvatarImage
+                          className="size-8 rounded-xl"
+                          src={currentUser?.avatarUrl}
+                          alt={`Avatar de ${currentUser?.nome || "Usuário"}`}
+                        />
+                        <AvatarFallback className="rounded-xl bg-muted">
+                          {isLoading ? (
+                            <Skeleton className="h-8 w-8 rounded-xl" />
+                          ) : currentUser ? (
+                            getInitials(currentUser.nome)
+                          ) : (
+                            "US"
+                          )}
+                        </AvatarFallback>
+                      </Avatar>
+                    </DropdownMenuTrigger>
+
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>
+                        {currentUser?.nome || "Usuário"}
+                      </DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={handleLogout}>
+                        Sair
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
 
                   {/* Informações do usuário */}
                   <div className="flex flex-col">
@@ -89,7 +103,6 @@ export const Navbar = () => {
                           {currentUser?.regiaoAutorizada ||
                             "Região não definida"}
                         </span>
-                        {/* Cargo com background usando as variáveis CSS diretamente */}
                         {currentUser?.cargo && (
                           <span
                             className="text-xs px-2 py-0.5 rounded-full leading-none mt-1 w-fit"
@@ -104,8 +117,6 @@ export const Navbar = () => {
                       </>
                     )}
                   </div>
-
-                  {/* Dropdown Menu */}
                 </div>
               </SidebarMenuItem>
             </SidebarMenu>

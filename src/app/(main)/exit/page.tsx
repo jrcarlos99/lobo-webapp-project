@@ -1,3 +1,4 @@
+"use client";
 import { LogoutForm } from "@/components/AppLogoutDialog";
 
 export default function ExitPage() {

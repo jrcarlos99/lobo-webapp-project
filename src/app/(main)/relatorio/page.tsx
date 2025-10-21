@@ -1,20 +1,43 @@
 "use client";
 
-import { useCurrentUser } from "@/hooks/useAuth";
-
-import type { Occurrence, OccurrenceFilters } from "@/types/occurrence";
+import type { OccurrenceFilters } from "@/types/occurrence";
 import { AppDatePicker } from "@/components/AppDatePicker";
-import { AppFilter } from "@/components/AppFilter";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
+import { handleGenerateReport } from "@/utils/export";
+import { getOccurrencesFor } from "@/services/ocorrencies.service";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 export default function RelatorioPage() {
-  const { data: currentUser, isLoading: isUserLoading } = useCurrentUser();
   const [filtrosDeTela, setFiltrosDeTela] = useState<OccurrenceFilters>({});
+  const [loading, setLoading] = useState(false);
 
+  // Hook que traz o usuário logado
+  const { data: currentUser } = useCurrentUser();
+
+  const gerarRelatorio = async () => {
+    if (!currentUser) {
+      console.warn("Nenhum usuário logado encontrado");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const data = await getOccurrencesFor(currentUser, filtrosDeTela);
+
+      const formatDate = (dateString?: string) =>
+        dateString ? new Date(dateString).toLocaleDateString("pt-BR") : "?";
+
+      const periodo = `${formatDate(filtrosDeTela.dataInicio)} - ${formatDate(
+        filtrosDeTela.dataFim
+      )}`;
+      handleGenerateReport(data, periodo);
+    } finally {
+      setLoading(false);
+    }
+  };
   const forms = [
     {
       title: "Atendimento Básico",
@@ -41,11 +64,7 @@ export default function RelatorioPage() {
       color: "var(--chart-5)",
       href: "/relatorio/salvamento",
     },
-    {
-      title: "Mergulho",
-      color: "var(--chart-5)",
-      href: "/relatorio/mergulho",
-    },
+    { title: "Mergulho", color: "var(--chart-5)", href: "/relatorio/mergulho" },
     {
       title: "Produtos Perigosos",
       color: "var(--chart-4)",
@@ -81,16 +100,13 @@ export default function RelatorioPage() {
       </div>
 
       <div className="flex flex-row-reverse bg-primary-foreground p-4 rounded-2xl ">
-        <Button className="bg-[var(--color-button)] hover:bg-[var(--color-secondary-lobo)] w-full sm:w-auto px-6 h-12">
-          <a href="">Gerar Relatório</a>
+        <Button
+          onClick={gerarRelatorio}
+          disabled={loading}
+          className="bg-[var(--color-button)] hover:bg-[var(--color-secondary-lobo)] w-full sm:w-auto px-6 h-12"
+        >
+          {loading ? "Gerando..." : "Gerar Relatório"}
         </Button>
-      </div>
-
-      <div className="bg-white p-4 rounded-lg shadow-sm flex flex-col md:flex-col items-center gap-4 col-span-2">
-        <AppFilter
-          cidadesAutorizadas={currentUser?.cidadesAutorizadas || []}
-          onFilterChange={setFiltrosDeTela}
-        />
       </div>
 
       <div className="bg-primary-foreground p-4 rounded-lg col-span-2">

@@ -1,11 +1,10 @@
 "use client";
 
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import { Occurrence } from "@/types/occurrence";
-import { useEffect } from "react";
 
 // Corrige o bug do ícone padrão do Leaflet no React
 const DefaultIcon = L.icon({

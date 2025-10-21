@@ -211,6 +211,7 @@ class UserService {
         const prevRes = await apiClient.get(`/usuarios/${userId}`);
         prevApiUser = (prevRes.data ?? null) as ApiUser;
       } catch (e) {
+        console.warn("Erro ao buscar usuário anterior:", e);
         prevApiUser = null;
       }
 

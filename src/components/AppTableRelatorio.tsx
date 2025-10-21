@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Table,
   TableBody,
@@ -6,54 +8,38 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { AuditLog, LogDetail } from "@/types/user";
+import type { LogDetail, AuditLog } from "@/types/audit";
 
-// const reports = [
-//   {
-//     data: "03/09",
-//     user: "Juliana Silveira",
-//     action: "Criar Conta",
-//     details: "Usuário 'juli.sil",
-//   },
-//   {
-//     data: "03/09",
-//     user: "João Gomes",
-//     action: "Alterar Senha",
-//     details: "Senha: '*********'",
-//   },
-//   {
-//     data: "29/08",
-//     user: "Maria Souza",
-//     action: "Login",
-//     details: "Usuário Autenticado",
-//   },
-//   {
-//     data: "27/08",
-//     user: "Pedro Lima",
-//     action: "Atualizar Imagem",
-//     details: "Imagem Atualizada",
-//   },
-// ];
-
-// Função que simula dados e que será substituido por chamada a API
-
-function viewDetail(detail: LogDetail) {
+function viewDetail(detail?: LogDetail) {
   if (!detail) return null;
-  if (detail.type === "field_change") {
-    if (detail.previousValue || detail.newValue) {
-      return (
-        detail.message ??
-        `${detail.field}: ${detail.previousValue ?? ""} → ${
-          detail.newValue ?? ""
-        } `
-      );
+
+  switch (detail.type) {
+    case "field_change": {
+      const hasValues = detail.previousValue || detail.newValue;
+      if (hasValues) {
+        return (
+          detail.message ??
+          `${detail.field}: ${detail.previousValue ?? ""} → ${
+            detail.newValue ?? ""
+          }`
+        );
+      }
+      return detail.message ?? `${detail.field} alterado`;
     }
-    return detail.message ?? `${detail.field} alterado`;
+
+    case "resource_event":
+      return detail.message ?? `${detail.resource} ${detail.resourceId ?? ""}`;
+
+    case "action":
+      return detail.message ?? detail.actionName;
+
+    case "unknown":
+      return detail.message ?? JSON.stringify(detail);
+
+    default:
+      // Fallback defensivo, embora não deva acontecer
+      return JSON.stringify(detail);
   }
-  if (detail.type === "resource_event")
-    return detail.message ?? `${detail.resource} ${detail.resourceId ?? ""}`;
-  if (detail.type === "action") return detail.message ?? detail.actionName;
-  return JSON.stringify(detail);
 }
 
 export const AppTableRelatorio = ({ reports }: { reports: AuditLog[] }) => {
@@ -75,7 +61,9 @@ export const AppTableRelatorio = ({ reports }: { reports: AuditLog[] }) => {
                 <TableCell className="font-medium text-center">
                   {new Date(r.timestamp).toLocaleDateString("pt-BR")}
                 </TableCell>
-                <TableCell className="text-center">{r.username}</TableCell>
+                <TableCell className="text-center">
+                  {r.username ?? "-"}
+                </TableCell>
                 <TableCell className="text-center">{r.action}</TableCell>
                 <TableCell className="text-center">
                   {viewDetail(r.detail)}

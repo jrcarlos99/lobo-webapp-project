@@ -48,3 +48,12 @@ export interface OccurrenceFilters {
   cidade?: string;
   regiao?: "RMR" | "AGRE" | "SERT" | "ZDMT" | "all";
 }
+
+export interface OccurrenceReport extends Occurrence {
+  vitimaIlesa?: number;
+  vitimaFeridos?: number;
+  vitimaObitos?: number;
+  tempoRespostaMin?: number;
+  tempoOperacaoMin?: number;
+  apoioExterno?: boolean;
+}

@@ -116,16 +116,22 @@ export const AppTableUsers = ({
                   <TableCell className="text-center">{user.email}</TableCell>
                   <TableCell className="text-center">{user.cargo}</TableCell>
                   <TableCell className="text-center">
-                    <span
-                      className="{`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      user.status === 'active' 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-red-100 text-red-800'
-                    }`}"
-                    >
-                      {user.status === "active" ? "Ativo" : "Inativo"}
-                    </span>
+                    {(() => {
+                      const { label, isActive } = normalizeStatus(user.status);
+                      return (
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            isActive
+                              ? "bg-green-100 text-green-800"
+                              : "bg-red-100 text-red-800"
+                          }`}
+                        >
+                          {label}
+                        </span>
+                      );
+                    })()}
                   </TableCell>
+
                   <TableCell className="text-center">
                     {user.lastLogin}
                   </TableCell>

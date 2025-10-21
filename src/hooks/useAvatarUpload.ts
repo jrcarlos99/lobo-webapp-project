@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import type { CurrentUser } from "@/types/user";
 
 export const useAvatarUpload = () => {
   const [isUploading, setIsUploading] = useState(false);
@@ -15,7 +16,7 @@ export const useAvatarUpload = () => {
 
       const objecturl = URL.createObjectURL(file);
 
-      queryClient.setQueryData(["me"], (oldData: any) => {
+      queryClient.setQueryData<CurrentUser | undefined>(["me"], (oldData) => {
         if (!oldData) return oldData;
         return {
           ...oldData,

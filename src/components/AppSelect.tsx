@@ -172,7 +172,7 @@ export const AppSelect = ({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button className=" w-full sm:w-[358px] bg-[var(--color-button)] hover:bg-[var(--color-secondary-lobo)]">
-              <a href="">Gerar Estatística</a>
+              Gerar Estatística
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
