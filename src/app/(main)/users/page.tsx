@@ -46,7 +46,7 @@ export default function UsersPage() {
       const result = await userService.getUsers();
 
       if (result.success && result.data) {
-        setUsers(result.data); // ✅ já é User[]
+        setUsers(result.data);
         setTotalCount(result.data.length);
       } else {
         console.error("Erro ao carregar usuários:", result.error);
