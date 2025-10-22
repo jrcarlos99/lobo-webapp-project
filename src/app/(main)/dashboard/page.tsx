@@ -71,7 +71,7 @@ export default function DashboardPage() {
           regionDisabled={!can(currentUser?.cargo, "region:all")}
           fixedRegionLabel={currentUser?.regiaoAutorizada}
         />
-        {/* <DashboardMap occurrences={occurrences} /> */}
+        <DashboardMap occurrences={occurrences} />
         <DashboardCharts
           dashboardData={dashboardData}
           isLoading={isDashboardLoading}
