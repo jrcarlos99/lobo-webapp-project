@@ -12,27 +12,26 @@ import {
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Menu } from "lucide-react";
 
 export default function HeaderPage() {
   const pathname = usePathname();
 
-  const isActive = (path: string) => {
-    return pathname === path;
-  };
+  const isActive = (path: string) => pathname === path;
 
   return (
-    <nav className="flex items-center p-4 bg-background border-b border-border">
-      {/* Logo e Nome */}
+    <nav className="flex items-center justify-between p-4 bg-background border-b border-border">
+      {/* Logo */}
       <div className="flex items-center">
-        <Image alt="LoboLogo" src="/lobo.svg" width={50} height={10} />
+        <Image alt="LoboLogo" src="/lobo.svg" width={40} height={40} />
         <div className="font-bold text-lg ml-2">L.O.B.O</div>
       </div>
 
-      {/* Conteúdo do Meio - Menu de Navegação */}
-      <div className="flex-1 flex justify-center">
+      {/* Menu Desktop */}
+      <div className="hidden md:flex flex-1 justify-center">
         <NavigationMenu>
           <NavigationMenuList className="flex gap-6">
-            {/* Início */}
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
                 <Link
@@ -49,7 +48,6 @@ export default function HeaderPage() {
               </NavigationMenuLink>
             </NavigationMenuItem>
 
-            {/* Serviços */}
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
                 <Link
@@ -66,7 +64,6 @@ export default function HeaderPage() {
               </NavigationMenuLink>
             </NavigationMenuItem>
 
-            {/* Sobre Nós */}
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
                 <Link
@@ -86,11 +83,38 @@ export default function HeaderPage() {
         </NavigationMenu>
       </div>
 
-      {/* Botão Contato */}
-      <div className="flex justify-end">
-        <Button className="bg-[var(--color-button)] text-white hover:bg-[var(--color-button)]/90 text-white ">
+      {/* Botão Desktop */}
+      <div className="hidden md:flex justify-end">
+        <Button className="bg-[var(--color-button)] text-white hover:bg-[var(--color-button)]/90">
           <Link href="/contato">Contato</Link>
         </Button>
+      </div>
+
+      {/* Menu Mobile */}
+      <div className="md:hidden">
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <Menu className="h-6 w-6" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="p-6">
+            <nav className="flex flex-col gap-4 mt-4">
+              <Link href="/inicio" className="text-lg font-medium">
+                Início
+              </Link>
+              <Link href="/servicos" className="text-lg font-medium">
+                Serviços
+              </Link>
+              <Link href="/about" className="text-lg font-medium">
+                Sobre Nós
+              </Link>
+              <Link href="/contato" className="text-lg font-medium">
+                Contato
+              </Link>
+            </nav>
+          </SheetContent>
+        </Sheet>
       </div>
     </nav>
   );
