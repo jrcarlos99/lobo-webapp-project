@@ -2,13 +2,14 @@ import { Region } from "./reports";
 
 export interface User {
   id: string;
-  name: string;
+  nomeCompleto: string;
   email: string;
-  roles: string;
-  department?: string;
+  cargo: string;
+  regiao: string;
   region?: Region;
-  status: "active" | "inactive";
+  status: string;
   lastLogin?: string;
+  nip?: string;
 }
 
 export interface ApiUser {

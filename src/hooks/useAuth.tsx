@@ -137,7 +137,7 @@ export const useLogout = () => {
     mutationFn: async () => logout(),
     onSuccess: () => {
       queryClient.clear();
-      router.push("/auth/login");
+      router.push("/login");
     },
   });
 };

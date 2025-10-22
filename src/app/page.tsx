@@ -23,7 +23,7 @@ export default function HeaderPage() {
     if (isAuthenticated) {
       router.push("/dashboard");
     } else {
-      router.push("/auth/login");
+      router.push("/login");
     }
   }, [isAuthenticated, router]);
 

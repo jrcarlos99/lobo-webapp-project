@@ -1,6 +1,6 @@
 "use client";
 
-import { Cell, Pie, PieChart } from "recharts";
+import { Cell, Pie, PieChart, Legend } from "recharts";
 import {
   Card,
   CardContent,
@@ -10,19 +10,30 @@ import {
 } from "@/components/ui/card";
 import {
   ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
 import { DashboardData } from "@/types/dashboard";
 
+// Configuração de cores e labels por região
 const chartConfig: ChartConfig = {
   RMR: { label: "RMR", color: "var(--chart-region-rmr)" },
   AGRE: { label: "Agreste", color: "var(--chart-region-agre)" },
   SERT: { label: "Sertão", color: "var(--chart-region-sertao)" },
   ZDMT: { label: "Zona da Mata", color: "var(--chart-region-zdmt)" },
+};
+
+// Mapa de possíveis chaves do backend → chartConfig
+const regiaoKeyMap: Record<string, keyof typeof chartConfig> = {
+  RMR: "RMR",
+  AGRE: "AGRE",
+  SERT: "SERT",
+  SERTAO: "SERT", // caso venha sem acento
+  Sertão: "SERT",
+  ZDMT: "ZDMT",
+  "Zona da Mata": "ZDMT",
+  Agreste: "AGRE",
 };
 
 type Props = {
@@ -42,13 +53,20 @@ export default function ChartPieDonut({ data, isLoading }: Props) {
     );
   }
 
-  // Agora usamos porRegiao em vez de graficoRegiao
+  // Mapeia os dados vindos do backend para o formato esperado pelo gráfico
   const chartData =
-    Object.entries(data?.porRegiao ?? {}).map(([key, value]) => ({
-      key,
-      name: chartConfig[key as keyof typeof chartConfig]?.label ?? key,
-      value,
-    })) ?? [];
+    Object.entries(data?.porRegiao ?? {}).map(([rawKey, value]) => {
+      const normalizedKey =
+        regiaoKeyMap[rawKey] ??
+        regiaoKeyMap[rawKey.toUpperCase()] ??
+        ("RMR" as keyof typeof chartConfig); // fallback
+      const conf = chartConfig[normalizedKey];
+      return {
+        key: normalizedKey,
+        name: conf.label,
+        value,
+      };
+    }) ?? [];
 
   return (
     <Card className="flex flex-col bg-transparent border">
@@ -75,14 +93,11 @@ export default function ChartPieDonut({ data, isLoading }: Props) {
               {chartData.map((entry, i) => (
                 <Cell
                   key={`cell-${i}`}
-                  fill={
-                    chartConfig[entry.key as keyof typeof chartConfig]?.color ??
-                    "var(--chart-1)"
-                  }
+                  fill={chartConfig[entry.key]?.color ?? "var(--chart-1)"}
                 />
               ))}
             </Pie>
-            <ChartLegend content={<ChartLegendContent />} />
+            <Legend />
           </PieChart>
         </ChartContainer>
       </CardContent>

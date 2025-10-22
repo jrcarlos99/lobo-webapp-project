@@ -1,21 +1,29 @@
 "use client";
 
-import { Cell, Pie, PieChart } from "recharts";
+import { Cell, Pie, PieChart, Legend } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
 import { DashboardData } from "@/types/dashboard";
 
+// Config de turnos
 const chartConfig: ChartConfig = {
   manha: { label: "Manhã", color: "var(--chart-turno-manha)" },
   tarde: { label: "Tarde", color: "var(--chart-turno-tarde)" },
   noite: { label: "Noite", color: "var(--chart-turno-noite)" },
+};
+
+// Mapa de chaves do backend → config
+const turnoKeyMap: Record<string, keyof typeof chartConfig> = {
+  Manhã: "manha",
+  Manha: "manha", // caso venha sem acento
+  Tarde: "tarde",
+  Noite: "noite",
+  Dia: "manha", // se “Dia” significar manhã no seu dado
 };
 
 type Props = {
@@ -34,13 +42,16 @@ export default function AppPieChartTurno({ data, isLoading }: Props) {
     );
   }
 
-  // Agora usamos porTurno em vez de graficoTurno
   const chartData =
-    Object.entries(data?.porTurno ?? {}).map(([key, value]) => ({
-      key: key.toLowerCase(), // "Manhã" -> "manha"
-      name: key,
-      value,
-    })) ?? [];
+    Object.entries(data?.porTurno ?? {}).map(([rawKey, value]) => {
+      const k = turnoKeyMap[rawKey] ?? turnoKeyMap[rawKey.trim()] ?? "manha";
+      const conf = chartConfig[k];
+      return {
+        key: k, // "manha" | "tarde" | "noite"
+        name: conf.label, // legenda e tooltip
+        value,
+      };
+    }) ?? [];
 
   return (
     <Card className="flex flex-col bg-transparent border">
@@ -65,13 +76,12 @@ export default function AppPieChartTurno({ data, isLoading }: Props) {
                 <Cell
                   key={`cell-${i}`}
                   fill={
-                    chartConfig[entry.key as keyof typeof chartConfig]?.color ??
-                    "var(--chart-turno-manha)"
+                    chartConfig[entry.key]?.color ?? "var(--chart-turno-manha)"
                   }
                 />
               ))}
             </Pie>
-            <ChartLegend content={<ChartLegendContent />} />
+            <Legend />
           </PieChart>
         </ChartContainer>
       </CardContent>

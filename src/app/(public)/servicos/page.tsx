@@ -9,20 +9,14 @@ export default function ServicosPage() {
       style={{ minHeight: `calc(100vh - ${HEADER_HEIGHT}px)` }}
     >
       {/* Lado Esquerdo */}
-      <div className="flex items-center justify-center p-8 lg:p-8 overflow-auto min-h-0">
-        <div
-          className="w-full flex items-center justify-center"
-          style={{ maxHeight: `(100vh - ${HEADER_HEIGHT}px)` }}
-        >
-          <Image
-            alt="Imagem dos bombeiros"
-            src="/bombeiros.svg"
-            width={1200}
-            height={1070}
-            className="w-auto h-auto max-w-full max-h-[calc(100vh - 69px)]"
-            priority
-          />
-        </div>
+      <div className="relative w-full h-full min-h-[400px] lg:min-h-0">
+        <Image
+          alt="Imagem dos bombeiros"
+          src="/bombeiros.png"
+          fill
+          className="object-cover object-center-bottom"
+          priority
+        />
       </div>
 
       {/* Lado Direito */}

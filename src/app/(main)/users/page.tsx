@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { AppDatePicker } from "@/components/AppDatePicker";
 import { InputWithButton } from "@/components/AppInputWithButton";
-import { AppTableUsers, User } from "@/components/AppTableUsers";
+import { AppTableUsers } from "@/components/AppTableUsers";
 
 import { AddUserDialog } from "@/components/AppAddUserDialog";
 import { usePagination } from "@/hooks/usePagination";
@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { userService } from "@/services/userService";
 import { EditUserDialog } from "@/components/AppEditUserDialog";
-import { ApiUser } from "@/types/user";
+import type { User } from "@/types/user";
 
 const MOCK_INITIAL_PAGE_SIZE = 10;
 
@@ -46,23 +46,8 @@ export default function UsersPage() {
       const result = await userService.getUsers();
 
       if (result.success && result.data) {
-        const mapped = result.data.map((u: ApiUser): User => {
-          return {
-            id: String(u.id ?? u._id ?? ""),
-            nomeCompleto:
-              u.nomeCompleto ??
-              u.name ??
-              (u.firstName ? `${u.firstName} ${u.lastName ?? ""}` : ""),
-            email: u.email ?? "",
-            cargo: u.cargo ?? u.perfil ?? u.role ?? "",
-            regiao: u.regiao ?? u.region ?? "",
-            status: u.status ?? (u.active ? "active" : "inactive"),
-            lastLogin: u.lastLogin ?? u.ultimoLogin ?? null,
-            nip: u.nip ?? undefined,
-          } as User;
-        });
-        setUsers(mapped);
-        setTotalCount(mapped.length);
+        setUsers(result.data); // ✅ já é User[]
+        setTotalCount(result.data.length);
       } else {
         console.error("Erro ao carregar usuários:", result.error);
       }
@@ -71,7 +56,7 @@ export default function UsersPage() {
     } finally {
       setIsLoading(false);
     }
-  }, []); // ✅ dependências removidas
+  }, []);
 
   useEffect(() => {
     loadUsers();
@@ -93,7 +78,6 @@ export default function UsersPage() {
   };
 
   const handleDeleteUser = () => {
-    // ✅ parâmetro removido
     setRefreshTrigger((prev) => prev + 1);
   };
 
@@ -112,8 +96,6 @@ export default function UsersPage() {
     </Button>
   );
 
-  const handleAdd = () => console.log("Adicionar usuário (APENAS ADMIN)");
-
   return (
     <div className="grid grid-cols-1 gap-4">
       <div className="bg-primary-foreground p-4 rounded-lg">
@@ -126,7 +108,7 @@ export default function UsersPage() {
       <div className="bg-white p-4 rounded-lg shadow-sm flex flex-col gap-4">
         <InputWithButton
           onSearch={handleSearch}
-          onAdd={handleAdd}
+          onAdd={() => {}}
           searchTerm={searchTerm}
           onSearchTermChange={setSearchTerm}
           placeholder="Buscar usuários por nome ou email..."

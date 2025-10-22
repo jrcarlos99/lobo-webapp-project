@@ -3,6 +3,21 @@ import { scopeFiltersFor } from "@/policies/scope";
 import type { AuthUser } from "@/types/auth";
 import type { QueryParams } from "@/types/query";
 
+export const userService = {
+  async getCurrentUser(): Promise<AuthUser> {
+    const res = await apiClient.get("/usuarios/me");
+    const data = res.data;
+    return {
+      id_usuario: data.id,
+      email: data.email,
+      nome: data.nomeCompleto,
+      cargo: data.perfil,
+      regiaoAutorizada: data.regiaoAutorizada ?? data.regiao ?? "",
+      cidadesAutorizadas: data.cidadesAutorizadas ?? [],
+    } as AuthUser;
+  },
+};
+
 export type UserListItem = {
   id_usuario: number;
   nome: string;

@@ -60,7 +60,7 @@ export default function DashboardPage() {
       style={{ minHeight: `calc(100vh - ${HEADER_HEIGHT}px)` }}
       className="min-h-0"
     >
-      <div className="grid grid-cols-1 lg:grid-cols-3 2xl:grid-cols-4 gap-4 p-4 min-h-0 h-full">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 p-4 h-full">
         <DashboardFilters
           filtros={filtros}
           setFiltros={setFiltros}
@@ -71,7 +71,7 @@ export default function DashboardPage() {
           regionDisabled={!can(currentUser?.cargo, "region:all")}
           fixedRegionLabel={currentUser?.regiaoAutorizada}
         />
-        <DashboardMap occurrences={occurrences} />
+        {/* <DashboardMap occurrences={occurrences} /> */}
         <DashboardCharts
           dashboardData={dashboardData}
           isLoading={isDashboardLoading}

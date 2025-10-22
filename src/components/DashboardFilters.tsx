@@ -26,7 +26,7 @@ export default function DashboardFilters({
   fixedRegionLabel,
 }: Props) {
   return (
-    <div className="bg-primary-foreground p-4 rounded-lg h-full flex flex-col min-h-0">
+    <div className="w-full bg-primary-foreground p-4 rounded-lg h-full flex flex-col min-h-0">
       <AppDatePicker
         onChange={(value) =>
           setFiltros((prev) => ({

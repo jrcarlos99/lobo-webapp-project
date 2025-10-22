@@ -22,17 +22,7 @@ import { Button } from "./ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { userService } from "@/services/userService";
-
-export interface User {
-  id: string;
-  nomeCompleto: string;
-  email: string;
-  cargo: string;
-  regiao: string;
-  status: string;
-  lastLogin?: string;
-  nip?: string;
-}
+import type { User } from "@/types/user";
 
 interface AppTableUserProps {
   users: User[];
@@ -58,9 +48,7 @@ export const AppTableUsers = ({
   const totalPages = Math.ceil(totalItems / pageSize);
 
   const handleEdit = (user: User) => {
-    if (onEditUser) {
-      onEditUser(user);
-    }
+    onEditUser?.(user);
   };
 
   const handleDelete = async (userId: string) => {
@@ -68,9 +56,7 @@ export const AppTableUsers = ({
       try {
         const result = await userService.deleteUser(userId);
         if (result.success) {
-          if (onDeleteUser) {
-            onDeleteUser(userId);
-          }
+          onDeleteUser?.(userId);
         } else {
           alert(result.error || "Erro ao deletar usuário");
         }
@@ -84,7 +70,7 @@ export const AppTableUsers = ({
   const normalizeStatus = (raw?: string) => {
     const s = String(raw ?? "").toLowerCase();
     const isInactive =
-      ["inactive", "inativo", "inativos", "inativos", "inativo"].includes(s) ||
+      ["inactive", "inativo", "inativos", "inativo"].includes(s) ||
       s === "false";
     return {
       label: isInactive ? "Inativo" : "Ativo",
@@ -131,15 +117,13 @@ export const AppTableUsers = ({
                       );
                     })()}
                   </TableCell>
-
                   <TableCell className="text-center">
-                    {user.lastLogin}
+                    {user.lastLogin ?? "-"}
                   </TableCell>
                   <TableCell className="text-center">
                     <TableActions
                       onEdit={() => handleEdit(user)}
                       onDelete={() => handleDelete(user.id)}
-                      // onView={() => console.log("Visualizar:", user.name)}
                     />
                   </TableCell>
                 </TableRow>
@@ -147,7 +131,7 @@ export const AppTableUsers = ({
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={7}
+                  colSpan={6}
                   className="text-center py-8 text-muted-foreground"
                 >
                   Nenhum usuário encontrado
@@ -157,8 +141,8 @@ export const AppTableUsers = ({
           </TableBody>
         </Table>
       </div>
-      {/* Controle de paginação */}
 
+      {/* Controle de paginação */}
       <div className="flex flex-wrap items-center justify-between gap-4 px-2">
         <div className="flex items-center space-x-2">
           <span className="text-sm text-muted-foreground">
@@ -191,7 +175,6 @@ export const AppTableUsers = ({
               onClick={() => onPageChange(1)}
               disabled={currentPage === 1}
             >
-              <span className="sr-only">Primeira Página</span>
               <ChevronLeft className="h-4 w-4" />
               <ChevronLeft className="h-4 w-4 -ml-2" />
             </Button>
@@ -201,7 +184,6 @@ export const AppTableUsers = ({
               onClick={() => onPageChange(currentPage - 1)}
               disabled={currentPage === 1}
             >
-              <span className="sr-only">Página Anterior</span>
               <ChevronLeft className="h-4 w-4" />
             </Button>
             <Button
@@ -210,7 +192,6 @@ export const AppTableUsers = ({
               onClick={() => onPageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
             >
-              <span className="sr-only">Próxima Página</span>
               <ChevronRight className="h-4 w-4" />
             </Button>
             <Button
@@ -219,7 +200,6 @@ export const AppTableUsers = ({
               onClick={() => onPageChange(totalPages)}
               disabled={currentPage === totalPages}
             >
-              <span className="sr-only">Última Página</span>
               <ChevronRight className="h-4 w-4" />
               <ChevronRight className="h-4 w-4 -ml-2" />
             </Button>

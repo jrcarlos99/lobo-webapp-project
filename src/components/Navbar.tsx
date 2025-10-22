@@ -1,7 +1,6 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import { Badge } from "@/components/ui/badge";
 import { Bell } from "lucide-react";
 import { Button } from "./ui/button";
 import {
@@ -11,25 +10,19 @@ import {
   SidebarMenuItem,
   SidebarTrigger,
 } from "./ui/sidebar";
-import { useCurrentUser, useLogout } from "@/hooks/useAuth";
+import { useCurrentUser } from "@/hooks/useAuth";
 import { Skeleton } from "@/components/ui/skeleton";
-
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
 
 export const Navbar = () => {
   const { data: currentUser, isLoading } = useCurrentUser();
-  const logoutMutation = useLogout();
-
-  const handleLogout = () => {
-    logoutMutation.mutate();
-  };
+  console.log(currentUser);
 
   // Função para gerar iniciais do nome
   const getInitials = (name?: string) => {
@@ -54,37 +47,23 @@ export const Navbar = () => {
             <SidebarMenu>
               <SidebarMenuItem>
                 <div className="flex items-center gap-3 px-2 py-0.5">
-                  {/* Avatar + Dropdown */}
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Avatar className="cursor-pointer">
-                        <AvatarImage
-                          className="size-8 rounded-xl"
-                          src={currentUser?.avatarUrl}
-                          alt={`Avatar de ${currentUser?.nome || "Usuário"}`}
-                        />
-                        <AvatarFallback className="rounded-xl bg-muted">
-                          {isLoading ? (
-                            <Skeleton className="h-8 w-8 rounded-xl" />
-                          ) : currentUser ? (
-                            getInitials(currentUser.nome)
-                          ) : (
-                            "US"
-                          )}
-                        </AvatarFallback>
-                      </Avatar>
-                    </DropdownMenuTrigger>
-
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>
-                        {currentUser?.nome || "Usuário"}
-                      </DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={handleLogout}>
-                        Sair
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  {/* Avatar */}
+                  <Avatar className="size-8 rounded-xl bg-muted flex items-center justify-center">
+                    <AvatarImage
+                      className="size-8 rounded-xl"
+                      src={currentUser?.avatarUrl}
+                      alt={`Avatar de ${currentUser?.nome || "Usuário"}`}
+                    />
+                    <AvatarFallback className="rounded-xl bg-muted text-sm font-medium">
+                      {isLoading ? (
+                        <Skeleton className="h-8 w-8 rounded-xl" />
+                      ) : currentUser ? (
+                        getInitials(currentUser.nome)
+                      ) : (
+                        "US"
+                      )}
+                    </AvatarFallback>
+                  </Avatar>
 
                   {/* Informações do usuário */}
                   <div className="flex flex-col">
@@ -100,9 +79,14 @@ export const Navbar = () => {
                           {currentUser?.nome || "Usuário"}
                         </span>
                         <span className="text-xs text-muted-foreground leading-none mt-1">
-                          {currentUser?.regiaoAutorizada ||
-                            "Região não definida"}
+                          {currentUser?.regiaoAutorizada &&
+                          currentUser.regiaoAutorizada.trim() !== ""
+                            ? currentUser.regiaoAutorizada
+                            : currentUser?.cargo === "ADMIN"
+                            ? "Todas as regiões"
+                            : "Região não definida"}
                         </span>
+
                         {currentUser?.cargo && (
                           <span
                             className="text-xs px-2 py-0.5 rounded-full leading-none mt-1 w-fit"
@@ -125,17 +109,30 @@ export const Navbar = () => {
       </div>
 
       {/* Right - Notificações */}
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon">
-          <Badge
-            asChild
-            variant="outline"
-            className="h-5 min-w-5 rounded-full px-1 font-mono tabular-num"
-          >
-            <Bell />
-          </Badge>
-        </Button>
-      </div>
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button variant="ghost" size="lg" className="relative">
+            <Bell className="h-6 w-6" />
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1">
+              3
+            </span>
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Notificações</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2">
+            <div className="p-2 rounded bg-muted">
+              🔔 Nova ocorrência registrada
+            </div>
+            <div className="p-2 rounded bg-muted">📊 Relatório disponível</div>
+            <div className="p-2 rounded bg-muted">
+              ⚠️ Sistema em manutenção amanhã
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </nav>
   );
 };
