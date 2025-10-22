@@ -11,17 +11,23 @@ function pick<T>(arr: T[]) {
 export const getFallbackUsers = (): User[] => [
   {
     id: "u1",
-    name: "Juliana Silveira",
+    nomeCompleto: "Juliana Silveira",
     email: "juli.sil@lobo.com",
-    roles: "Admin",
+    cargo: "Admin",
     status: "active",
+    regiao: "Zona da Mata",
+    lastLogin: "2024-06-10T14:23:00Z",
+    nip: "123456",
   },
   {
     id: "u2",
-    name: "João Gomes",
+    nomeCompleto: "João Gomes",
     email: "joao.gomes@lobo.com",
-    roles: "Analista",
+    cargo: "Analista",
     status: "active",
+    regiao: "Sertão",
+    lastLogin: "2024-06-09T09:15:00Z",
+    nip: "654321",
   },
 ];
 
@@ -54,10 +60,9 @@ export const generateMockReports = (
     let detail: LogDetail;
     if (action === "Alterar Email") {
       const prev = user.email;
-      const newEmail = `${user.name.toLowerCase().split(" ")[0]}.${randomInt(
-        1,
-        99
-      )}@empresa.com`;
+      const newEmail = `${
+        user.nomeCompleto.toLowerCase().split(" ")[0]
+      }.${randomInt(1, 99)}@empresa.com`;
       detail = {
         type: "field_change",
         field: "email",
@@ -69,7 +74,7 @@ export const generateMockReports = (
       detail = {
         type: "field_change",
         field: "role",
-        previousValue: user.roles ?? "user",
+        previousValue: user.cargo ?? "user",
         newValue: "admin",
         message: "Permissão concedida: Admin",
       };
@@ -78,7 +83,7 @@ export const generateMockReports = (
         type: "resource_event",
         resource: "user",
         resourceId: `user_${randomInt(100, 999)}`,
-        message: `Usuário '${user.name}' criado.`,
+        message: `Usuário '${user.nomeCompleto}' criado.`,
       };
     } else if (action === "Atualizar Imagem") {
       detail = {
@@ -112,7 +117,7 @@ export const generateMockReports = (
       id: `log_${Date.now()}_${i}`,
       timestamp,
       userId: user.id,
-      username: user.name,
+      username: user.nomeCompleto,
       action,
       detail,
     });
