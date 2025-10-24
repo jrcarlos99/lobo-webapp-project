@@ -22,13 +22,25 @@ function formatDate(iso?: string) {
   });
 }
 
+type AppTableProps = {
+  data?: Occurrence[];
+  onRowClick?: (occurrence: Occurrence) => void;
+  page?: number; // página atual (0-based)
+  size?: number; // tamanho da página
+  totalElements?: number; // total de registros
+};
+
 export const AppTable = ({
   data = [],
   onRowClick,
-}: {
-  data?: Occurrence[];
-  onRowClick?: (occurrence: Occurrence) => void;
-}) => {
+  page = 0,
+  size = 10,
+  totalElements = 0,
+}: AppTableProps) => {
+  // cálculo do range exibido
+  const start = totalElements > 0 ? page * size + 1 : 0;
+  const end = Math.min((page + 1) * size, totalElements);
+
   return (
     <div className="border rounded-xl overflow-x-auto">
       <Table>
@@ -80,6 +92,13 @@ export const AppTable = ({
           )}
         </TableBody>
       </Table>
+
+      {/* Rodapé com range e total */}
+      {totalElements > 0 && (
+        <div className="px-4 py-2 text-sm text-gray-600">
+          Mostrando {start}–{end} de {totalElements} registros
+        </div>
+      )}
     </div>
   );
 };

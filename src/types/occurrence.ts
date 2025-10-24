@@ -12,7 +12,8 @@ export type OccurrenceType =
   | "RESGATE"
   | "PRE_HOSPITALAR"
   | "EPI"
-  | "COMUNICACAO";
+  | "COMUNICACAO"
+  | "VAZAMENTO"; //
 
 export interface Occurrence {
   id: number;
@@ -40,12 +41,7 @@ export interface OccurrenceFilters {
   size?: number;
   sort?: string;
   status?: OccurrenceStatus | OccurrenceStatus[];
-  tipo?:
-    | "INCENDIO"
-    | "ACIDENTE_DE_TRANSITO"
-    | "SALVAMENTO"
-    | "RESGATE"
-    | "VAZAMENTO";
+  tipo?: OccurrenceType;
   cidade?: string;
   regiao?: "RMR" | "AGRE" | "SERT" | "ZDMT" | "all";
 }

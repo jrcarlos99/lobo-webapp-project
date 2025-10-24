@@ -37,7 +37,8 @@ export default function DashboardCharts({ dashboardData, isLoading }: Props) {
       </div>
 
       {/* Pie Chart por Turno */}
-      <div className="w-fullbg-primary-foreground p-4 rounded-lg lg:col-span-2 xl:col-span-1 2xl:col-span-1 h-full flex flex-col min-h-0">
+      {/* Pie Chart por Turno */}
+      <div className="w-full bg-primary-foreground p-4 rounded-lg lg:col-span-2 xl:col-span-1 2xl:col-span-1 h-full flex flex-col min-h-0">
         <div className="flex-1 min-h-0">
           <AppPieChartTurno data={dashboardData} isLoading={isLoading} />
         </div>

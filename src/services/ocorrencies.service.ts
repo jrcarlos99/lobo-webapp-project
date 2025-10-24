@@ -5,7 +5,7 @@ import type { QueryParams } from "@/types/query";
 import type { Occurrence, OccurrenceFilters } from "@/types/occurrence";
 import { enforceRegionAccess } from "@/utils/enforceRegionAccess";
 
-type PageableResponse<T> = {
+export type PageableResponse<T> = {
   content: T[];
   pageable: unknown;
   last: boolean;
@@ -21,7 +21,6 @@ type PageableResponse<T> = {
 
 // Lista de regiões válidas (iguais ao backend)
 const regioesValidas = ["RMR", "AGRE", "SERT", "ZDMT"] as const;
-
 type RegiaoValida = (typeof regioesValidas)[number];
 
 function isRegiaoValida(value: string): value is RegiaoValida {
@@ -63,16 +62,33 @@ export function buildOccurrenceParams(
   return params;
 }
 
-// Busca ocorrências com filtros
-export const getOccurrencesFor = async (
+/**
+ * 🔹 Versão completa: retorna a resposta paginada do backend
+ * Ideal para a página de Ocorrências (com paginação, totalElements, etc.)
+ */
+export const getOccurrencesPage = async (
   currentUser?: AuthUser,
   filters?: OccurrenceFilters
-): Promise<Occurrence[]> => {
-  if (!currentUser) return [];
+): Promise<PageableResponse<Occurrence>> => {
+  if (!currentUser) {
+    return {
+      content: [],
+      pageable: {},
+      last: true,
+      totalPages: 0,
+      totalElements: 0,
+      first: true,
+      size: 0,
+      number: 0,
+      sort: {},
+      numberOfElements: 0,
+      empty: true,
+    };
+  }
 
   const f: OccurrenceFilters = { ...(filters ?? {}) };
 
-  // Defaults
+  // Defaults de datas e paginação
   const hoje = new Date();
   const seisMesesAtras = new Date();
   seisMesesAtras.setMonth(hoje.getMonth() - 6);
@@ -105,14 +121,23 @@ export const getOccurrencesFor = async (
   if (filtrosComRegiao.regiao === "all") {
     delete (params as Record<string, unknown>).regiao;
   }
-  console.log("Chamando backend com filtros:", params);
 
-  const res = await apiClient.get<PageableResponse<Occurrence> | Occurrence[]>(
+  const res = await apiClient.get<PageableResponse<Occurrence>>(
     "/api/ocorrencias",
     { params }
   );
 
-  if (Array.isArray(res.data)) return res.data;
-  const paginada = res.data as PageableResponse<Occurrence>;
-  return paginada?.content ?? [];
+  return res.data;
+};
+
+/**
+ * 🔹 Versão simplificada: retorna apenas a lista de ocorrências
+ * Ideal para o Dashboard (não precisa de paginação)
+ */
+export const getOccurrencesFor = async (
+  currentUser?: AuthUser,
+  filters?: OccurrenceFilters
+): Promise<Occurrence[]> => {
+  const page = await getOccurrencesPage(currentUser, filters);
+  return page.content;
 };
