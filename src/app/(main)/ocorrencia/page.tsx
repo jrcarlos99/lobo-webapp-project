@@ -27,8 +27,8 @@ export default function OcorrenciaPage() {
 
   const filtrosComDefaults = useMemo<OccurrenceFilters>(() => {
     const hoje = new Date();
-    const trintaDiasAtras = new Date();
-    trintaDiasAtras.setDate(hoje.getDate() - 30);
+    const seisMesesAtras = new Date();
+    seisMesesAtras.setMonth(hoje.getMonth() - 6);
 
     const toLocalIso = (date: Date, endOfDay = false) => {
       const y = date.getFullYear();
@@ -40,7 +40,7 @@ export default function OcorrenciaPage() {
       return `${y}-${m}-${d}T${hh}:${mm}:${ss}`;
     };
     const base: OccurrenceFilters = {
-      dataInicio: filtrosDeTela.dataInicio ?? toLocalIso(trintaDiasAtras),
+      dataInicio: filtrosDeTela.dataInicio ?? toLocalIso(seisMesesAtras),
       dataFim: filtrosDeTela.dataFim ?? toLocalIso(hoje, true),
       page: filtrosDeTela.page ?? 0,
       size: filtrosDeTela.size ?? 10,
@@ -48,12 +48,13 @@ export default function OcorrenciaPage() {
       status: Array.isArray(filtrosDeTela.status)
         ? filtrosDeTela.status.length > 0
           ? filtrosDeTela.status
-          : ["EM_ANDAMENTO", "CANCELADO", "ABERTA", "PENDENTE"]
+          : ["EM_ANDAMENTO", "CANCELADO", "ABERTA", "PENDENTE", "CONCLUIDO"]
         : filtrosDeTela.status ?? [
             "EM_ANDAMENTO",
             "ABERTA",
             "CANCELADO",
             "PENDENTE",
+            "CONCLUIDO",
           ],
       tipo: filtrosDeTela.tipo,
       cidade: filtrosDeTela.cidade,
@@ -75,7 +76,7 @@ export default function OcorrenciaPage() {
     queryKey: ["ocorrencias", currentUser?.id_usuario, filtrosComDefaults],
     queryFn: () => {
       if (!currentUser) return Promise.resolve([]);
-      return getOccurrencesFor(currentUser, filtrosComDefaults);
+      return getOccurrencesFor(currentUser, {});
     },
     enabled: !!currentUser,
     staleTime: 0,

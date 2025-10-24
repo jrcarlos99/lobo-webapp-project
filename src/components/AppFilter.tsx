@@ -68,7 +68,13 @@ export const AppFilter = ({
       newFilters.status = selectedStatus as OccurrenceFilters["status"];
     } else {
       // usa só os status que já existem no backend
-      newFilters.status = ["EM_ANDAMENTO", "ABERTA", "CANCELADO", "PENDENTE"];
+      newFilters.status = [
+        "EM_ANDAMENTO",
+        "ABERTA",
+        "CANCELADO",
+        "PENDENTE",
+        "CONCLUIDO",
+      ];
     }
 
     // traduz período em dataInicio/dataFim
@@ -165,6 +171,7 @@ export const AppFilter = ({
           <SelectItem value="EM_ANDAMENTO">Em Andamento</SelectItem>
           <SelectItem value="ABERTA">Aberta</SelectItem>
           <SelectItem value="CANCELADO">Cancelado</SelectItem>
+          <SelectItem value="CONCLUIDO">Concluído</SelectItem>
         </SelectContent>
       </Select>
 

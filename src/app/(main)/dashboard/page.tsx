@@ -1,22 +1,19 @@
 "use client";
 import { useState } from "react";
 import { useCurrentUser } from "@/hooks/useAuth";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useDashboardData } from "@/hooks/useDashboardData";
 import { getOccurrencesFor } from "@/services/ocorrencies.service";
 import { Occurrence, OccurrenceFilters } from "@/types/occurrence";
-import { useDashboardData } from "@/hooks/useDashboardData";
-import { useOccurrenceFilters } from "@/hooks/useOccurrenceFilters";
 
 import DashboardFilters from "@/components/DashboardFilters";
-
 import dynamic from "next/dynamic";
-
 import { enforceRegionAccess } from "@/utils/enforceRegionAccess";
 import { can } from "@/policies/permissions";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 
-const DashboardMap = dynamic(() => import("@/components/DashboardMap"), {
-  ssr: false,
-});
+// const DashboardMap = dynamic(() => import("@/components/DashboardMap"), {
+//   ssr: false,
+// });
 const DashboardCharts = dynamic(() => import("@/components/DashboardCharts"), {
   ssr: false,
 });
@@ -26,12 +23,11 @@ const HEADER_HEIGHT = 69;
 export default function DashboardPage() {
   const { data: currentUser } = useCurrentUser();
   const [filtros, setFiltros] = useState<OccurrenceFilters>({});
-  const filtrosComDefaults = useOccurrenceFilters(filtros);
 
   // Aplica regra de acesso
-  const effectiveFilters = enforceRegionAccess(filtrosComDefaults, currentUser);
+  const effectiveFilters = enforceRegionAccess(filtros, currentUser);
 
-  // KPIs e dados agregados
+  //  Hook centralizado para dashboard
   const { data: dashboardData, isLoading: isDashboardLoading } =
     useDashboardData(effectiveFilters);
 
@@ -71,7 +67,7 @@ export default function DashboardPage() {
           regionDisabled={!can(currentUser?.cargo, "region:all")}
           fixedRegionLabel={currentUser?.regiaoAutorizada}
         />
-        <DashboardMap occurrences={occurrences} />
+        {/* <DashboardMap occurrences={occurrences} /> */}
         <DashboardCharts
           dashboardData={dashboardData}
           isLoading={isDashboardLoading}

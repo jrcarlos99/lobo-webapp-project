@@ -9,32 +9,34 @@ const DEFAULT_STATUS: OccurrenceStatus[] = [
   "CANCELADO",
 ];
 
-export function useOccurrenceFilters(filtros: OccurrenceFilters) {
-  return useMemo<OccurrenceFilters>(() => {
+function toIsoDate(date: Date): string {
+  return date.toISOString().split("T")[0];
+}
+
+export function useOccurrenceFilters(
+  filtros: OccurrenceFilters = {}
+): OccurrenceFilters {
+  return useMemo(() => {
     const hoje = new Date();
-    const trintaDiasAtras = new Date();
-    trintaDiasAtras.setDate(hoje.getDate() - 30);
+    const seisMesesAtras = new Date();
+    seisMesesAtras.setMonth(hoje.getMonth() - 6);
 
-    const toLocalIso = (date: Date, endOfDay = false) => {
-      const y = date.getFullYear();
-      const m = String(date.getMonth() + 1).padStart(2, "0");
-      const d = String(date.getDate()).padStart(2, "0");
-      const hh = endOfDay ? "23" : "00";
-      const mm = endOfDay ? "59" : "00";
-      const ss = endOfDay ? "59" : "00";
-      return `${y}-${m}-${d}T${hh}:${mm}:${ss}`;
-    };
-
-    return {
-      dataInicio: filtros.dataInicio ?? toLocalIso(trintaDiasAtras),
-      dataFim: filtros.dataFim ?? toLocalIso(hoje, true),
+    const base: OccurrenceFilters = {
+      dataInicio: filtros.dataInicio
+        ? filtros.dataInicio.split("T")[0] // garante yyyy-MM-dd
+        : toIsoDate(seisMesesAtras),
+      dataFim: filtros.dataFim
+        ? filtros.dataFim.split("T")[0]
+        : toIsoDate(hoje),
       page: filtros.page ?? 0,
-      size: filtros.size ?? 100,
+      size: filtros.size ?? 10,
       sort: filtros.sort ?? "id,desc",
-      status: filtros.status ?? DEFAULT_STATUS,
+      status: filtros.status,
       tipo: filtros.tipo,
       cidade: filtros.cidade,
       regiao: filtros.regiao,
     };
+
+    return base;
   }, [filtros]);
 }

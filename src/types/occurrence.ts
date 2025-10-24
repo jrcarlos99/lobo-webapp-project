@@ -2,7 +2,8 @@ export type OccurrenceStatus =
   | "EM_ANDAMENTO"
   | "ABERTA"
   | "CANCELADO"
-  | "PENDENTE";
+  | "PENDENTE"
+  | "CONCLUIDO";
 
 export type OccurrenceType =
   | "INCENDIO"

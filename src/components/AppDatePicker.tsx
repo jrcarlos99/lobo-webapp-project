@@ -14,10 +14,7 @@ import {
 } from "@/components/ui/popover";
 
 function formatDate(date: Date | undefined) {
-  if (!date) {
-    return "";
-  }
-
+  if (!date) return "";
   return date.toLocaleDateString("pt-BR", {
     day: "2-digit",
     month: "long",
@@ -26,10 +23,12 @@ function formatDate(date: Date | undefined) {
 }
 
 function isValidDate(date: Date | undefined) {
-  if (!date) {
-    return false;
-  }
-  return !isNaN(date.getTime());
+  return !!date && !isNaN(date.getTime());
+}
+
+//  helper para formatar no padrão yyyy-MM-dd
+function toIsoDate(date: Date): string {
+  return date.toISOString().split("T")[0];
 }
 
 export function AppDatePicker({
@@ -46,7 +45,6 @@ export function AppDatePicker({
     setDate(undefined);
     setValue("Todas as datas");
     setOpen(false);
-    // avisa o pai que não há filtro de data
     onChange?.({ dataInicio: undefined, dataFim: undefined });
   };
 
@@ -60,8 +58,8 @@ export function AppDatePicker({
 
       setValue(formatDate(date));
       onChange?.({
-        dataInicio: start.toISOString(),
-        dataFim: end.toISOString(),
+        dataInicio: toIsoDate(start), //  já no formato yyyy-MM-dd
+        dataFim: toIsoDate(end),
       });
     } else {
       setValue("");
@@ -98,7 +96,6 @@ export function AppDatePicker({
             sideOffset={10}
           >
             <div className="flex flex-col">
-              {/* Botão para limpar filtro de data */}
               <Button
                 variant="ghost"
                 className="w-full justify-start px-3 py-2 text-sm"

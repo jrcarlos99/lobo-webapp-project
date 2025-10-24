@@ -29,6 +29,11 @@ type AppSelectProps = {
   fixedRegionLabel?: string;
 };
 
+// helper para formatar yyyy-MM-dd
+function toIsoDate(date: Date): string {
+  return date.toISOString().split("T")[0];
+}
+
 export const AppSelect = ({
   occurrences,
   onFilterChange,
@@ -43,37 +48,28 @@ export const AppSelect = ({
           onValueChange={(value) => {
             if (!onFilterChange) return;
             const hoje = new Date();
-            const toLocalIso = (date: Date, endOfDay = false) => {
-              const y = date.getFullYear();
-              const m = String(date.getMonth() + 1).padStart(2, "0");
-              const d = String(date.getDate()).padStart(2, "0");
-              const hh = endOfDay ? "23" : "00";
-              const mm = endOfDay ? "59" : "00";
-              const ss = endOfDay ? "59" : "00";
-              return `${y}-${m}-${d}T${hh}:${mm}:${ss}`;
-            };
 
             let dataInicio: string | undefined;
             let dataFim: string | undefined;
 
             if (value === "today") {
-              dataInicio = toLocalIso(hoje);
-              dataFim = toLocalIso(hoje, true);
+              dataInicio = toIsoDate(hoje);
+              dataFim = toIsoDate(hoje);
             } else if (value === "yesterday") {
               const ontem = new Date();
               ontem.setDate(hoje.getDate() - 1);
-              dataInicio = toLocalIso(ontem);
-              dataFim = toLocalIso(ontem, true);
+              dataInicio = toIsoDate(ontem);
+              dataFim = toIsoDate(ontem);
             } else if (value === "last7days") {
               const seteDias = new Date();
               seteDias.setDate(hoje.getDate() - 7);
-              dataInicio = toLocalIso(seteDias);
-              dataFim = toLocalIso(hoje, true);
+              dataInicio = toIsoDate(seteDias);
+              dataFim = toIsoDate(hoje);
             } else if (value === "last30days") {
               const trintaDias = new Date();
               trintaDias.setDate(hoje.getDate() - 30);
-              dataInicio = toLocalIso(trintaDias);
-              dataFim = toLocalIso(hoje, true);
+              dataInicio = toIsoDate(trintaDias);
+              dataFim = toIsoDate(hoje);
             } else if (value === "lastmonth") {
               const primeiroDiaMesAnterior = new Date(
                 hoje.getFullYear(),
@@ -85,8 +81,8 @@ export const AppSelect = ({
                 hoje.getMonth(),
                 0
               );
-              dataInicio = toLocalIso(primeiroDiaMesAnterior);
-              dataFim = toLocalIso(ultimoDiaMesAnterior, true);
+              dataInicio = toIsoDate(primeiroDiaMesAnterior);
+              dataFim = toIsoDate(ultimoDiaMesAnterior);
             }
 
             onFilterChange({ dataInicio, dataFim });
@@ -163,6 +159,8 @@ export const AppSelect = ({
             <SelectItem value="EM_ANDAMENTO">Em andamento</SelectItem>
             <SelectItem value="PENDENTE">Pendente</SelectItem>
             <SelectItem value="CANCELADO">Cancelado</SelectItem>
+            <SelectItem value="CONCLUIDO">Concluído</SelectItem>{" "}
+            {/* ✅ incluído */}
           </SelectContent>
         </Select>
       </div>

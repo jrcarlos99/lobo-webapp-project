@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useCurrentUser } from "./useAuth";
-import { getDashboardData } from "@/services/ocorrencies.service";
+import { getDashboardData } from "@/services/dashboardService";
 import { DashboardData } from "@/types/dashboard";
 import { OccurrenceFilters } from "@/types/occurrence";
 
@@ -34,7 +34,10 @@ export function useDashboardData(
           currentUser.regiaoAutorizada as OccurrenceFilters["regiao"];
       }
 
-      return getDashboardData(currentUser, appliedFilters);
+      return getDashboardData(
+        appliedFilters.dataInicio,
+        appliedFilters.dataFim
+      );
     },
     enabled: !!currentUser,
     staleTime: 1000 * 60 * 5,

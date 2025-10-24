@@ -31,8 +31,8 @@ export default function DashboardFilters({
         onChange={(value) =>
           setFiltros((prev) => ({
             ...prev,
-            dataInicio: value.dataInicio,
-            dataFim: value.dataFim,
+            dataInicio: value.dataInicio, // já vem yyyy-MM-dd
+            dataFim: value.dataFim, // já vem yyyy-MM-dd
           }))
         }
       />

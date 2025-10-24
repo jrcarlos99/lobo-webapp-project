@@ -1,7 +1,8 @@
 import axios, { AxiosError, AxiosInstance } from "axios";
 import Cookies from "js-cookie";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || "https://api-gateway-60vv.onrender.com";
 
 if (typeof window !== "undefined") {
   console.log("🌐 API_BASE_URL em runtime:", API_BASE_URL);
