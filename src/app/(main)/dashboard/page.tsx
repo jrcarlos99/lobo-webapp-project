@@ -11,9 +11,9 @@ import { enforceRegionAccess } from "@/utils/enforceRegionAccess";
 import { can } from "@/policies/permissions";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 
-// const DashboardMap = dynamic(() => import("@/components/DashboardMap"), {
-//   ssr: false,
-// });
+const DashboardMap = dynamic(() => import("@/components/DashboardMap"), {
+  ssr: false,
+});
 const DashboardCharts = dynamic(() => import("@/components/DashboardCharts"), {
   ssr: false,
 });
@@ -67,7 +67,7 @@ export default function DashboardPage() {
           regionDisabled={!can(currentUser?.cargo, "region:all")}
           fixedRegionLabel={currentUser?.regiaoAutorizada}
         />
-        {/* <DashboardMap occurrences={occurrences} /> */}
+        <DashboardMap occurrences={occurrences} />
         <DashboardCharts
           dashboardData={dashboardData}
           isLoading={isDashboardLoading}
