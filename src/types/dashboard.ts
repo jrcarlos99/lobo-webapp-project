@@ -16,4 +16,7 @@ export type DashboardData = {
   porTurno: Record<string, number>;
   porRegiao: Record<string, number>;
   graficoTipo?: ChartPoint[];
+  graficoRegiao?: ChartPoint[];
+  graficoTurno?: ChartPoint[];
+  graficoStatus?: ChartPoint[];
 };

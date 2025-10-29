@@ -24,9 +24,11 @@ import {
 
 type AppSelectProps = {
   occurrences: Occurrence[];
-  onFilterChange?: (filters: Partial<OccurrenceFilters>) => void;
+  onFilterChange: (filters: Partial<OccurrenceFilters>) => void;
   disabled?: boolean;
   fixedRegionLabel?: string;
+  className?: string;
+  size?: "sm" | "md" | "lg";
 };
 
 // helper para formatar yyyy-MM-dd
@@ -39,7 +41,15 @@ export const AppSelect = ({
   onFilterChange,
   disabled = false,
   fixedRegionLabel,
+  className,
+  size = "md",
 }: AppSelectProps) => {
+  const sizeClasses = {
+    sm: "h-8 text-sm px-2",
+    md: "h-10 text-base px-3",
+    lg: "h-12 text-lg px-4",
+  };
+
   return (
     <>
       <div className="flex flex-col sm:flex-row space-x-0 sm:space-x-4 pt-4">
@@ -88,7 +98,11 @@ export const AppSelect = ({
             onFilterChange({ dataInicio, dataFim });
           }}
         >
-          <SelectTrigger className="font-inter bg-stone-50 w-full sm:w-[180px]">
+          <SelectTrigger
+            className={`font-inter bg-stone-50 w-full sm:w-[180px] ${
+              sizeClasses[size]
+            } ${className ?? ""}`}
+          >
             <SelectValue placeholder="Período" />
           </SelectTrigger>
           <SelectContent className="font-inter">
@@ -106,7 +120,11 @@ export const AppSelect = ({
             onFilterChange?.({ tipo: value as OccurrenceFilters["tipo"] })
           }
         >
-          <SelectTrigger className="font-inter bg-stone-5 w-full sm:w-[180px]">
+          <SelectTrigger
+            className={`font-inter bg-stone-50 w-full sm:w-[180px] ${
+              sizeClasses[size]
+            } ${className ?? ""}`}
+          >
             <SelectValue placeholder="Tipo" />
           </SelectTrigger>
           <SelectContent className="font-inter">
@@ -127,7 +145,11 @@ export const AppSelect = ({
             onFilterChange?.({ regiao: value as OccurrenceFilters["regiao"] })
           }
         >
-          <SelectTrigger className="font-inter bg-stone-5 w-full sm:w-[180px]">
+          <SelectTrigger
+            className={`font-inter bg-stone-50 w-full sm:w-[180px] ${
+              sizeClasses[size]
+            } ${className ?? ""}`}
+          >
             <SelectValue placeholder="Região" />
           </SelectTrigger>
           <SelectContent className="font-inter">
@@ -151,7 +173,11 @@ export const AppSelect = ({
             onFilterChange?.({ status: [value as OccurrenceStatus] })
           }
         >
-          <SelectTrigger className="font-inter bg-stone-5 w-full sm:w-[180px]">
+          <SelectTrigger
+            className={`font-inter bg-stone-50 w-full sm:w-[180px] ${
+              sizeClasses[size]
+            } ${className ?? ""}`}
+          >
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent className="font-inter">
@@ -159,8 +185,7 @@ export const AppSelect = ({
             <SelectItem value="EM_ANDAMENTO">Em andamento</SelectItem>
             <SelectItem value="PENDENTE">Pendente</SelectItem>
             <SelectItem value="CANCELADO">Cancelado</SelectItem>
-            <SelectItem value="CONCLUIDO">Concluído</SelectItem>{" "}
-            {/* ✅ incluído */}
+            <SelectItem value="CONCLUIDO">Concluído</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -169,7 +194,11 @@ export const AppSelect = ({
       <div className="pt-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button className=" w-full sm:w-[358px] bg-[var(--color-button)] hover:bg-[var(--color-secondary-lobo)]">
+            <Button
+              className={`w-full sm:w-[358px] bg-[var(--color-button)] hover:bg-[var(--color-secondary-lobo)] ${
+                sizeClasses[size]
+              } ${className ?? ""}`}
+            >
               Gerar Estatística
             </Button>
           </DropdownMenuTrigger>

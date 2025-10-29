@@ -15,15 +15,27 @@ export function useDashboardData(
 ): UseDashboardDataResult {
   const { data: currentUser } = useCurrentUser();
 
-  const { data, isLoading, isError } = useQuery<DashboardData>({
+  const { data, isLoading, isError } = useQuery<
+    DashboardData,
+    Error,
+    DashboardData,
+    unknown[]
+  >({
     queryKey: [
       "dashboard",
-      currentUser?.cargo,
-      currentUser?.regiaoAutorizada,
-      filtros,
+      currentUser?.id_usuario,
+      filtros?.dataInicio,
+      filtros?.dataFim,
+      filtros?.regiao,
+      filtros?.cidade,
+      filtros?.tipo,
+      filtros?.status,
     ],
-    queryFn: () => {
+    queryFn: async () => {
+      console.log("➡️ Entrou no queryFn do useDashboardData");
+
       if (!currentUser) {
+        console.warn("⚠️ currentUser ainda não carregado");
         throw new Error("Usuário não autenticado");
       }
 
@@ -34,13 +46,19 @@ export function useDashboardData(
           currentUser.regiaoAutorizada as OccurrenceFilters["regiao"];
       }
 
-      return getDashboardData(
+      console.log("📌 Filtros aplicados:", appliedFilters);
+
+      const res = await getDashboardData(
         appliedFilters.dataInicio,
         appliedFilters.dataFim
       );
+      console.log("✅ Resposta do getDashboardData:", res);
+      return res;
     },
     enabled: !!currentUser,
-    staleTime: 1000 * 60 * 5,
+    gcTime: 0, // substitui cacheTime
+    staleTime: 0,
+    refetchOnWindowFocus: false,
   });
 
   return {

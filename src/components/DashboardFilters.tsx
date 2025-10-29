@@ -26,20 +26,21 @@ export default function DashboardFilters({
   fixedRegionLabel,
 }: Props) {
   return (
-    <div className="w-full bg-primary-foreground p-4 rounded-lg h-full flex flex-col min-h-0">
+    <div className="w-full bg-primary-foreground p-4 rounded-lg flex flex-col gap-3">
       <AppDatePicker
         onChange={(value) =>
           setFiltros((prev) => ({
             ...prev,
-            dataInicio: value.dataInicio, // já vem yyyy-MM-dd
-            dataFim: value.dataFim, // já vem yyyy-MM-dd
+            dataInicio: value.dataInicio,
+            dataFim: value.dataFim,
           }))
         }
       />
-      <span className="font-inter text-6xl flex pt-2 font-medium text-[var(--color-text)]">
+      <span className="font-inter text-2xl font-medium text-[var(--color-text)]">
         Hoje
       </span>
       <AppSelect
+        size="sm"
         occurrences={occurrences}
         onFilterChange={(newFilters) =>
           setFiltros((prev) => ({
@@ -51,7 +52,7 @@ export default function DashboardFilters({
         fixedRegionLabel={fixedRegionLabel}
       />
 
-      <div className="flex-1 min-h-0 mt-4">
+      <div className="mt-2 h-[120px]">
         <AppOcorrenciaChart data={dashboardData} isLoading={isLoading} />
       </div>
     </div>

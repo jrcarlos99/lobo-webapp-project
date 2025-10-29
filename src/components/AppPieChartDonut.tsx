@@ -14,7 +14,6 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import { DashboardData } from "@/types/dashboard";
 
 // Configuração de cores e labels por região
 const chartConfig: ChartConfig = {
@@ -37,7 +36,7 @@ const regiaoKeyMap: Record<string, keyof typeof chartConfig> = {
 };
 
 type Props = {
-  data?: DashboardData;
+  data?: Record<string, number>;
   isLoading?: boolean;
 };
 
@@ -55,11 +54,11 @@ export default function ChartPieDonut({ data, isLoading }: Props) {
 
   // Mapeia os dados vindos do backend para o formato esperado pelo gráfico
   const chartData =
-    Object.entries(data?.porRegiao ?? {}).map(([rawKey, value]) => {
+    Object.entries(data ?? {}).map(([rawKey, value]) => {
       const normalizedKey =
         regiaoKeyMap[rawKey] ??
         regiaoKeyMap[rawKey.toUpperCase()] ??
-        ("RMR" as keyof typeof chartConfig); // fallback
+        ("RMR" as keyof typeof chartConfig);
       const conf = chartConfig[normalizedKey];
       return {
         key: normalizedKey,

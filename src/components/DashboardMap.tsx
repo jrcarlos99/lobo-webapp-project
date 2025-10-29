@@ -10,7 +10,7 @@ type Props = {
 
 export default function DashboardMap({ occurrences }: Props) {
   return (
-    <div className="w-full bg-primary-foreground p-4 rounded-lg lg:col-span-3 xl:col-span-3 2xl:col-span-3 h-full min-h-0">
+    <div className="w-full bg-primary-foreground p-4 rounded-lg lg:col-span-2 h-[350px]">
       <AppMapa occurrences={occurrences} />
     </div>
   );

@@ -93,18 +93,15 @@ export const getOccurrencesPage = async (
   const seisMesesAtras = new Date();
   seisMesesAtras.setMonth(hoje.getMonth() - 6);
 
-  const toLocalIso = (date: Date, endOfDay = false) => {
+  const toLocalDate = (date: Date): string => {
     const y = date.getFullYear();
     const m = String(date.getMonth() + 1).padStart(2, "0");
     const d = String(date.getDate()).padStart(2, "0");
-    const hh = endOfDay ? "23" : "00";
-    const mm = endOfDay ? "59" : "00";
-    const ss = endOfDay ? "59" : "00";
-    return `${y}-${m}-${d}T${hh}:${mm}:${ss}`;
+    return `${y}-${m}-${d}`;
   };
 
-  f.dataInicio = f.dataInicio ?? toLocalIso(seisMesesAtras);
-  f.dataFim = f.dataFim ?? toLocalIso(hoje, true);
+  f.dataInicio = f.dataInicio ?? toLocalDate(seisMesesAtras);
+  f.dataFim = f.dataFim ?? toLocalDate(hoje);
   f.page = typeof f.page === "number" ? f.page : 0;
   f.size = typeof f.size === "number" ? f.size : 10;
   f.sort = "dataHoraAbertura,desc";
@@ -122,11 +119,13 @@ export const getOccurrencesPage = async (
     delete (params as Record<string, unknown>).regiao;
   }
 
+  console.log("Parâmetros enviados:", params);
+
   const res = await apiClient.get<PageableResponse<Occurrence>>(
     "/api/ocorrencias",
     { params }
   );
-
+  console.log("📥 Resposta recebida:", res.data);
   return res.data;
 };
 

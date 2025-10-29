@@ -21,20 +21,29 @@ export default function OcorrenciaPage() {
   const { data: currentUser, isLoading: isUserLoading } = useCurrentUser();
   const [selected, setSelected] = useState<Occurrence | null>(null);
   const [open, setOpen] = useState(false);
+
+  // ✅ Inicializa filtros já com datas válidas
+  const hoje = new Date().toISOString().split("T")[0];
+  const seisMesesAtras = new Date();
+  seisMesesAtras.setMonth(seisMesesAtras.getMonth() - 6);
+  const seisMesesStr = seisMesesAtras.toISOString().split("T")[0];
+
   const [filtrosDeTela, setFiltrosDeTela] = useState<OccurrenceFilters>({
     page: 0,
     size: 10,
     sort: "id,desc",
+    dataInicio: seisMesesStr,
+    dataFim: hoje,
   });
 
+  // ✅ Query só dispara quando currentUser existe
   const { data: occurrencesPage, isLoading: isOccurrencesLoading } = useQuery({
     queryKey: ["ocorrencias", currentUser?.id_usuario, filtrosDeTela],
-    queryFn: () => {
-      if (!currentUser) return Promise.resolve(undefined);
-      return getOccurrencesPage(currentUser, filtrosDeTela);
-    },
+    queryFn: () => getOccurrencesPage(currentUser!, filtrosDeTela),
     enabled: !!currentUser,
     placeholderData: keepPreviousData,
+    staleTime: 1000 * 60 * 5, // 5 minutos
+    refetchOnWindowFocus: false,
   });
 
   const occurrences = occurrencesPage?.content ?? [];
@@ -53,7 +62,7 @@ export default function OcorrenciaPage() {
               ...prev,
               dataInicio: value.dataInicio,
               dataFim: value.dataFim,
-              page: 0,
+              page: 0, // ✅ sempre volta para a primeira página
             }))
           }
         />
@@ -65,7 +74,13 @@ export default function OcorrenciaPage() {
       <div className="bg-white p-4 rounded-lg shadow-sm flex flex-col md:flex-col items-center gap-4 col-span-2">
         <AppFilter
           cidadesAutorizadas={currentUser?.cidadesAutorizadas || []}
-          onFilterChange={setFiltrosDeTela}
+          onFilterChange={(newFilters) =>
+            setFiltrosDeTela((prev) => ({
+              ...prev,
+              ...newFilters,
+              page: 0, // ✅ reset de página ao mudar filtros
+            }))
+          }
         />
       </div>
 

@@ -8,7 +8,6 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, Cell, XAxis, YAxis } from "recharts";
-import { DashboardData } from "@/types/dashboard";
 
 const chartConfig: ChartConfig = {
   INCENDIO: { label: "Incêndio", color: "var(--chart-tipo-1)" },
@@ -23,7 +22,7 @@ const chartConfig: ChartConfig = {
 };
 
 type Props = {
-  data?: DashboardData;
+  data?: Record<string, number>;
   isLoading?: boolean;
 };
 
@@ -34,7 +33,7 @@ export default function AppBarChart({ data, isLoading }: Props) {
 
   // Agora usamos porTipo em vez de graficoTipo
   const chartData =
-    Object.entries(data?.porTipo ?? {}).map(([tipo, value]) => ({
+    Object.entries(data ?? {}).map(([tipo, value]) => ({
       tipo,
       ocorrencias: value,
     })) ?? [];

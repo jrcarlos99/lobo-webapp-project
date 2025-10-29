@@ -8,9 +8,8 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import { DashboardData } from "@/types/dashboard";
 
-// Config de turnos
+// Config de turnos usando as variáveis do global.css
 const chartConfig: ChartConfig = {
   manha: { label: "Manhã", color: "var(--chart-turno-manha)" },
   tarde: { label: "Tarde", color: "var(--chart-turno-tarde)" },
@@ -19,15 +18,13 @@ const chartConfig: ChartConfig = {
 
 // Mapa de chaves do backend → config
 const turnoKeyMap: Record<string, keyof typeof chartConfig> = {
-  Manhã: "manha",
-  Manha: "manha", // caso venha sem acento
-  Tarde: "tarde",
-  Noite: "noite",
-  Dia: "manha", // se “Dia” significar manhã no seu dado
+  MANHA: "manha",
+  TARDE: "tarde",
+  NOITE: "noite",
 };
 
 type Props = {
-  data?: DashboardData;
+  data?: Record<string, number>;
   isLoading?: boolean;
 };
 
@@ -42,16 +39,23 @@ export default function AppPieChartTurno({ data, isLoading }: Props) {
     );
   }
 
-  const chartData =
-    Object.entries(data?.porTurno ?? {}).map(([rawKey, value]) => {
-      const k = turnoKeyMap[rawKey] ?? turnoKeyMap[rawKey.trim()] ?? "manha";
+  // Monta os dados do gráfico, filtrando valores 0
+  const chartData = Object.entries(data ?? {})
+    .map(([rawKey, value]) => {
+      const k = turnoKeyMap[rawKey.trim().toUpperCase()] ?? null;
+      if (!k) return null;
       const conf = chartConfig[k];
       return {
-        key: k, // "manha" | "tarde" | "noite"
-        name: conf.label, // legenda e tooltip
+        key: k,
+        name: conf.label,
         value,
       };
-    }) ?? [];
+    })
+    .filter((d) => d !== null && d.value > 0) as {
+    key: keyof typeof chartConfig;
+    name: string;
+    value: number;
+  }[];
 
   return (
     <Card className="flex flex-col bg-transparent border">
@@ -73,12 +77,7 @@ export default function AppPieChartTurno({ data, isLoading }: Props) {
               label
             >
               {chartData.map((entry, i) => (
-                <Cell
-                  key={`cell-${i}`}
-                  fill={
-                    chartConfig[entry.key]?.color ?? "var(--chart-turno-manha)"
-                  }
-                />
+                <Cell key={`cell-${i}`} fill={chartConfig[entry.key]?.color} />
               ))}
             </Pie>
             <Legend />
