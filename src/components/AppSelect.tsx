@@ -52,7 +52,7 @@ export const AppSelect = ({
 
   return (
     <>
-      <div className="flex flex-col sm:flex-row space-x-0 sm:space-x-4 pt-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-4 sm:max-w-[740px]">
         {/* Dropdown Período */}
         <Select
           onValueChange={(value) => {
@@ -99,9 +99,9 @@ export const AppSelect = ({
           }}
         >
           <SelectTrigger
-            className={`font-inter bg-stone-50 w-full sm:w-[180px] ${
-              sizeClasses[size]
-            } ${className ?? ""}`}
+            className={`font-inter bg-stone-50 w-full ${sizeClasses[size]} ${
+              className ?? ""
+            }`}
           >
             <SelectValue placeholder="Período" />
           </SelectTrigger>
@@ -121,9 +121,9 @@ export const AppSelect = ({
           }
         >
           <SelectTrigger
-            className={`font-inter bg-stone-50 w-full sm:w-[180px] ${
-              sizeClasses[size]
-            } ${className ?? ""}`}
+            className={`font-inter bg-stone-50 w-full ${sizeClasses[size]} ${
+              className ?? ""
+            }`}
           >
             <SelectValue placeholder="Tipo" />
           </SelectTrigger>
@@ -135,9 +135,7 @@ export const AppSelect = ({
             <SelectItem value="VAZAMENTO">Vazamento</SelectItem>
           </SelectContent>
         </Select>
-      </div>
 
-      <div className="flex space-x-4 pt-4">
         {/* Dropdown Região */}
         <Select
           disabled={disabled}
@@ -146,9 +144,9 @@ export const AppSelect = ({
           }
         >
           <SelectTrigger
-            className={`font-inter bg-stone-50 w-full sm:w-[180px] ${
-              sizeClasses[size]
-            } ${className ?? ""}`}
+            className={`font-inter bg-stone-50 w-full ${sizeClasses[size]} ${
+              className ?? ""
+            }`}
           >
             <SelectValue placeholder="Região" />
           </SelectTrigger>
@@ -161,12 +159,6 @@ export const AppSelect = ({
           </SelectContent>
         </Select>
 
-        {disabled && fixedRegionLabel && (
-          <p className="text-sm text-gray-500">
-            Sua região está fixada em <strong>{fixedRegionLabel}</strong>
-          </p>
-        )}
-
         {/* Dropdown Status */}
         <Select
           onValueChange={(value) =>
@@ -174,9 +166,9 @@ export const AppSelect = ({
           }
         >
           <SelectTrigger
-            className={`font-inter bg-stone-50 w-full sm:w-[180px] ${
-              sizeClasses[size]
-            } ${className ?? ""}`}
+            className={`font-inter bg-stone-50 w-full ${sizeClasses[size]} ${
+              className ?? ""
+            }`}
           >
             <SelectValue placeholder="Status" />
           </SelectTrigger>
@@ -190,12 +182,11 @@ export const AppSelect = ({
         </Select>
       </div>
 
-      {/* Botão de Exportação */}
-      <div className="pt-4">
+      <div className="pt-4 sm:max-w-[740px]">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
-              className={`w-full sm:w-[358px] bg-[var(--color-button)] hover:bg-[var(--color-secondary-lobo)] ${
+              className={`w-full bg-[var(--color-button)] hover:bg-[var(--color-secondary-lobo)] ${
                 sizeClasses[size]
               } ${className ?? ""}`}
             >
@@ -212,6 +203,12 @@ export const AppSelect = ({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+
+      {disabled && fixedRegionLabel && (
+        <p className="pt-2 text-sm text-gray-500 sm:max-w-[740px]">
+          Sua região está fixada em <strong>{fixedRegionLabel}</strong>
+        </p>
+      )}
     </>
   );
 };

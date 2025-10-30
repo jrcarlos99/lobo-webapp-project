@@ -25,7 +25,7 @@ export default function DashboardCharts({ dashboardData, isLoading }: Props) {
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
         {/* Por Regiao */}
-        <div className="bg-primary-foreground p-2 flex flex-col ">
+        <div className="p-2 flex flex-col overflow-hidden">
           <ChartPieDonut
             data={dashboardData?.porRegiao}
             isLoading={isLoading}
@@ -33,12 +33,12 @@ export default function DashboardCharts({ dashboardData, isLoading }: Props) {
         </div>
 
         {/* Bar Chart */}
-        <div className="bg-primary-foreground p-2 flex flex-col  max-h-[180px]">
+        <div className=" p-2 flex flex-col overflow-hidden">
           <AppBarChart data={dashboardData?.porTipo} isLoading={isLoading} />
         </div>
 
         {/* Pie Chart por Turno */}
-        <div className="bg-primary-foreground p-2 flex flex-col ">
+        <div className=" p-2 flex flex-col overflow-hidden">
           <AppPieChartTurno
             data={dashboardData?.porTurno}
             isLoading={isLoading}

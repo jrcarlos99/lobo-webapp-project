@@ -21,8 +21,6 @@ const DashboardCharts = dynamic(() => import("@/components/DashboardCharts"), {
   ssr: false,
 });
 
-const HEADER_HEIGHT = 69;
-
 export default function DashboardPage() {
   const { data: currentUser, isLoading: isUserLoading } = useCurrentUser();
 
@@ -75,13 +73,9 @@ export default function DashboardPage() {
   if (isLoading) return <div className="p-4">Carregando Dashboard...</div>;
 
   return (
-    <div
-      style={{ minHeight: `calc(100vh - ${HEADER_HEIGHT}px)` }}
-      className="min-h-0"
-    >
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 p-4">
-        {/* Linha 1: filtros (1/3) + mapa (2/3) */}
-        <div className="lg:col-span-1">
+    <div className="`h-[calc(100vh-${HEADER_HEIGHT}px)] overflow-hidden`">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 p-2 h-full">
+        <div className="lg:col-span-1 lg:h-[420px] overflow-hidden">
           <DashboardFilters
             filtros={filtros}
             setFiltros={setFiltros}
@@ -94,12 +88,12 @@ export default function DashboardPage() {
           />
         </div>
 
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 lg:h-[420px] overflow-hidden">
           <DashboardMapComponent occurrences={occurrences} />
         </div>
 
         {/* Linha 2: gráficos ocupando as 3 colunas */}
-        <div className="lg:col-span-3">
+        <div className="lg:col-span-3 overflow-auto">
           <DashboardCharts
             dashboardData={dashboardData}
             isLoading={isDashboardLoading}
