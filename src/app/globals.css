@@ -75,6 +75,15 @@
   --chart-tipo-4: oklch(0.4381 0.156 20.76 / 0.5);
   --chart-tipo-5: oklch(0.4381 0.156 20.76 / 0.4);
 
+  .btn-ocorrencia {
+    background-color: var(--color-button);
+    transition: background-color 0.2s ease;
+  }
+
+  .btn-ocorrencia:hover {
+    background-color: var(--color-button-hover);
+  }
+
   --color-button: oklch(0.4381 0.156 20.76);
   --color-button-hover: oklch(0.4381 0.156 20.76 / 0.9);
   --color-chart-1: oklch(0.4381 0.156 20.76);

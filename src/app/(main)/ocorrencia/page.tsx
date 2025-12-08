@@ -16,6 +16,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function OcorrenciaPage() {
   const { data: currentUser, isLoading: isUserLoading } = useCurrentUser();
@@ -70,12 +72,14 @@ export default function OcorrenciaPage() {
           Ocorrências
         </span>
         <div className="mt-4">
-          <a
-            href="/ocorrencia/new"
-            className="inline-block px-4 py-2 rounded bg-blue-600 text-white"
+          <Button
+            asChild
+            className="btn-ocorrencia text-white font-semibold px-5 py-2.5 rounded-lg shadow-md"
           >
-            Criar Ocorrência
-          </a>
+            <Link href="/ocorrencia/new" className="flex items-center gap-2">
+              Criar Ocorrência
+            </Link>
+          </Button>
         </div>
       </div>
 
