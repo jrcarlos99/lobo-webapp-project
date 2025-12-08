@@ -18,6 +18,12 @@ import UploadImagem from "../../../../components/UploadImagem";
 import AssinaturaDigital from "../../../../components/AssinaturaDigital";
 import ConfirmarCriacaoModal from "../../../../components/ConfirmarCriacaoModal";
 
+import type {
+  Occurrence,
+  OccurrenceStatus,
+  OccurrenceType,
+} from "@/types/occurrence";
+
 import type SignatureCanvas from "react-signature-canvas";
 import { Button } from "@/components/ui/button";
 
@@ -43,12 +49,12 @@ export default function CriarOcorrenciaPage() {
     try {
       const values = getValues();
 
-      const ocorrencia = await createOcorrencia({
+      const ocorrencia: Occurrence = await createOcorrencia({
         titulo: values.tipo,
         descricao: values.descricao,
         regiao: values.regiao,
-        tipo: values.tipo,
-        status: "ABERTA",
+        tipo: values.tipo as OccurrenceType,
+        status: "ABERTA" as OccurrenceStatus,
         latitude: Number(values.latitude),
         longitude: Number(values.longitude),
         solicitante: null,
