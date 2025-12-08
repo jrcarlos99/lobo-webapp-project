@@ -93,3 +93,8 @@ export interface AnexoInsert {
   url_anexo: string;
   tipo: "imagem" | "assinatura";
 }
+
+export interface Anexo extends AnexoInsert {
+  id: number;
+  created_at: string;
+}

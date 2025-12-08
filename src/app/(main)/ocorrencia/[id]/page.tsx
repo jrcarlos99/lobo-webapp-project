@@ -1,6 +1,9 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { getOcorrenciaById } from "@/services/ocorrencia.service";
 import Image from "next/image";
-import type { AnexoInsert } from "@/types/occurrence";
+import type { Anexo, AnexoInsert, Occurrence } from "@/types/occurrence";
 
 type OcorrenciaPageProps = {
   params: {
@@ -8,13 +11,45 @@ type OcorrenciaPageProps = {
   };
 };
 
-export default async function OcorrenciaPage({ params }: OcorrenciaPageProps) {
-  const ocorrencia = await getOcorrenciaById(params.id);
+// se quiser, depois você pode tipar melhor isso
+type OcorrenciaComAnexos = Occurrence & { anexos: Anexo[] };
 
-  if (!ocorrencia) {
+export default function OcorrenciaPage({ params }: OcorrenciaPageProps) {
+  const [ocorrencia, setOcorrencia] = useState<OcorrenciaComAnexos | null>(
+    null
+  );
+  const [loading, setLoading] = useState(true);
+  const [erro, setErro] = useState<string | null>(null);
+
+  useEffect(() => {
+    const carregar = async () => {
+      try {
+        const data = await getOcorrenciaById(params.id);
+        setOcorrencia(data);
+      } catch (e) {
+        console.error(e);
+        setErro("Erro ao carregar ocorrência");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    carregar();
+  }, [params.id]);
+
+  if (loading) {
+    return (
+      <div className="p-6">
+        <h1 className="text-xl font-bold">Carregando ocorrência...</h1>
+      </div>
+    );
+  }
+
+  if (erro || !ocorrencia) {
     return (
       <div className="p-6">
         <h1 className="text-xl font-bold">Ocorrência não encontrada</h1>
+        {erro && <p className="text-sm text-red-500">{erro}</p>}
       </div>
     );
   }

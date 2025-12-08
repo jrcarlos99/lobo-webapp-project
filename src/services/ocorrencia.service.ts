@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabase";
-import type { OccurrenceInsert } from "@/types/occurrence";
+import type { Anexo, Occurrence, OccurrenceInsert } from "@/types/occurrence";
 
+//  Criação de ocorrência
 export async function createOcorrencia(data: OccurrenceInsert) {
   const { data: inserted, error } = await supabase
     .from("ocorrencia")
@@ -10,19 +11,35 @@ export async function createOcorrencia(data: OccurrenceInsert) {
 
   if (error) throw error;
 
-  return inserted;
+  return inserted as Occurrence;
 }
-export async function getOcorrenciaById(id: number | string) {
-  const { data, error } = await supabase
-    .from("ocorrencias")
-    .select("*, anexos(*)") // se não tiver relação anexos, pode remover isso
+
+// Busca de ocorrência + anexos
+export async function getOcorrenciaById(
+  id: number | string
+): Promise<Occurrence & { anexos: Anexo[] }> {
+  const { data: ocorrencia, error: errOcorrencia } = await supabase
+    .from("ocorrencia")
+    .select("*")
     .eq("id", id)
     .single();
 
-  if (error) {
-    console.error("Erro ao buscar ocorrência por ID", error);
-    throw error;
+  if (errOcorrencia) {
+    console.error("Erro ao buscar ocorrência por ID", errOcorrencia);
+    throw errOcorrencia;
   }
 
-  return data;
+  const { data: anexos, error: errAnexos } = await supabase
+    .from("ocorrencia_anexos")
+    .select("*")
+    .eq("ocorrencia_id", id);
+
+  if (errAnexos) {
+    console.error("Erro ao buscar anexos da ocorrência", errAnexos);
+  }
+
+  return {
+    ...ocorrencia,
+    anexos: anexos ?? [],
+  };
 }

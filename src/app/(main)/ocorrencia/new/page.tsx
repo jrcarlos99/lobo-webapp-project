@@ -27,7 +27,6 @@ export default function CriarOcorrenciaPage() {
 
   const [openConfirm, setOpenConfirm] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
-
   const [signaturePreview, setSignaturePreview] = useState<string | null>(null);
 
   const {
@@ -62,7 +61,6 @@ export default function CriarOcorrenciaPage() {
         equipe_id: values.equipe_id ? Number(values.equipe_id) : null,
       });
 
-      // ✅ Upload da imagem da ocorrência
       if (imageFile) {
         const imageUrl = await uploadFile(
           "ocorrencia-anexos",
@@ -77,7 +75,6 @@ export default function CriarOcorrenciaPage() {
         });
       }
 
-      // ✅ Upload da assinatura (usando o preview)
       if (signaturePreview) {
         const assinaturaUrl = await uploadBase64(
           "ocorrencia-anexos",
@@ -92,12 +89,10 @@ export default function CriarOcorrenciaPage() {
         });
       }
 
-      // ✅ Feedback visual
       toast.success(
         `Ocorrência criada: ${values.tipo} em ${values.regiao} (ID ${ocorrencia.id})`
       );
 
-      // ✅ Redirecionamento suave
       setTimeout(() => {
         router.push(`/ocorrencia/${ocorrencia.id}`);
       }, 1500);
