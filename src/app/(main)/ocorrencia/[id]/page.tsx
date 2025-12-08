@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { getOcorrenciaById } from "@/services/ocorrencia.service";
 import Image from "next/image";
-import type { Anexo, AnexoInsert, Occurrence } from "@/types/occurrence";
+import type { Anexo, Occurrence } from "@/types/occurrence";
 
 type OcorrenciaPageProps = {
   params: {
@@ -84,7 +84,7 @@ export default function OcorrenciaPage({ params }: OcorrenciaPageProps) {
 
       <h2 className="text-lg font-semibold mt-4">Anexos</h2>
       <div className="flex gap-4 flex-wrap">
-        {ocorrencia.anexos?.map((a: AnexoInsert) => (
+        {ocorrencia.anexos?.map((a: Anexo) => (
           <Image
             key={a.ocorrencia_id}
             src={a.url_anexo}
