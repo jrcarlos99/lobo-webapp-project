@@ -62,13 +62,21 @@ export default function OcorrenciaPage() {
               ...prev,
               dataInicio: value.dataInicio,
               dataFim: value.dataFim,
-              page: 0, // ✅ sempre volta para a primeira página
+              page: 0, //  sempre volta para a primeira página
             }))
           }
         />
         <span className="font-inter text-4xl sm:text-5xl lg:text-6xl flex pt-2 font-medium text-[var(--color-text)]">
           Ocorrências
         </span>
+        <div className="mt-4">
+          <a
+            href="/ocorrencia/new"
+            className="inline-block px-4 py-2 rounded bg-blue-600 text-white"
+          >
+            Criar Ocorrência
+          </a>
+        </div>
       </div>
 
       <div className="bg-white p-4 rounded-lg shadow-sm flex flex-col md:flex-col items-center gap-4 col-span-2">

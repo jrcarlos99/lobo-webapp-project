@@ -17,6 +17,7 @@ interface AuthContextType {
   login: (email: string, senha: string) => Promise<boolean>;
   logout: () => void;
   isAuthenticated: boolean;
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -29,6 +30,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [token, setToken] = useState<string | null>(null);
   const [role, setRole] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true); // ✅ NOVO
 
   useEffect(() => {
     const storedToken = localStorage.getItem("authToken");
@@ -40,6 +42,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setRole(storedRole);
       setIsAuthenticated(true);
     }
+
+    setLoading(false); // ✅ SÓ TERMINA DE CARREGAR AQUI
   }, []);
 
   const login = async (email: string, senha: string): Promise<boolean> => {
@@ -72,7 +76,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ token, role, login, logout, isAuthenticated }}
+      value={{ token, role, login, logout, isAuthenticated, loading }}
     >
       {children}
     </AuthContext.Provider>

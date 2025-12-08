@@ -79,7 +79,7 @@ export const login = async (
     path: "/",
     expires: 1,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    sameSite: "lax",
   });
 
   return normalizedUser;

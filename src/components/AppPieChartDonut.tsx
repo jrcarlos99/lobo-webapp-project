@@ -1,6 +1,6 @@
 "use client";
 
-import { Cell, Pie, PieChart, Legend } from "recharts";
+import { Cell, Legend, Pie, PieChart, ResponsiveContainer } from "recharts";
 import {
   Card,
   CardContent,
@@ -15,7 +15,6 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart";
 
-// Configuração de cores e labels por região
 const chartConfig: ChartConfig = {
   RMR: { label: "RMR", color: "var(--chart-region-rmr)" },
   AGRE: { label: "Agreste", color: "var(--chart-region-agre)" },
@@ -23,12 +22,11 @@ const chartConfig: ChartConfig = {
   ZDMT: { label: "Zona da Mata", color: "var(--chart-region-zdmt)" },
 };
 
-// Mapa de possíveis chaves do backend → chartConfig
 const regiaoKeyMap: Record<string, keyof typeof chartConfig> = {
   RMR: "RMR",
   AGRE: "AGRE",
   SERT: "SERT",
-  SERTAO: "SERT", // caso venha sem acento
+  SERTAO: "SERT",
   Sertão: "SERT",
   ZDMT: "ZDMT",
   "Zona da Mata": "ZDMT",
@@ -52,7 +50,6 @@ export default function ChartPieDonut({ data, isLoading }: Props) {
     );
   }
 
-  // Mapeia os dados vindos do backend para o formato esperado pelo gráfico
   const chartData =
     Object.entries(data ?? {}).map(([rawKey, value]) => {
       const normalizedKey =
@@ -60,11 +57,7 @@ export default function ChartPieDonut({ data, isLoading }: Props) {
         regiaoKeyMap[rawKey.toUpperCase()] ??
         ("RMR" as keyof typeof chartConfig);
       const conf = chartConfig[normalizedKey];
-      return {
-        key: normalizedKey,
-        name: conf.label,
-        value,
-      };
+      return { key: normalizedKey, name: conf.label, value };
     }) ?? [];
 
   return (
@@ -76,28 +69,35 @@ export default function ChartPieDonut({ data, isLoading }: Props) {
       <CardContent className="flex-1 pb-0">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[250px]"
+          className="mx-auto w-full h-[250px]"
         >
-          <PieChart>
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
-            <Pie
-              data={chartData}
-              dataKey="value"
-              nameKey="name"
-              innerRadius={60}
-            >
-              {chartData.map((entry, i) => (
-                <Cell
-                  key={`cell-${i}`}
-                  fill={chartConfig[entry.key]?.color ?? "var(--chart-1)"}
-                />
-              ))}
-            </Pie>
-            <Legend />
-          </PieChart>
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <ChartTooltip
+                cursor={false}
+                content={<ChartTooltipContent hideLabel />}
+              />
+              <Pie
+                data={chartData}
+                dataKey="value"
+                nameKey="name"
+                innerRadius={60}
+                outerRadius={100}
+              >
+                {chartData.map((entry, i) => (
+                  <Cell
+                    key={`cell-${i}`}
+                    fill={chartConfig[entry.key]?.color ?? "var(--chart-1)"}
+                  />
+                ))}
+              </Pie>
+              <Legend
+                verticalAlign="bottom"
+                align="center"
+                wrapperStyle={{ paddingTop: 8 }}
+              />
+            </PieChart>
+          </ResponsiveContainer>
         </ChartContainer>
       </CardContent>
     </Card>

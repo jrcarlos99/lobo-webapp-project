@@ -2,7 +2,11 @@ import { apiClient } from "@/lib/apiClient";
 
 import type { AuthUser } from "@/types/auth";
 import type { QueryParams } from "@/types/query";
-import type { Occurrence, OccurrenceFilters } from "@/types/occurrence";
+import type {
+  CreateOccurrenceDTO,
+  Occurrence,
+  OccurrenceFilters,
+} from "@/types/occurrence";
 import { enforceRegionAccess } from "@/utils/enforceRegionAccess";
 
 export type PageableResponse<T> = {
@@ -140,3 +144,11 @@ export const getOccurrencesFor = async (
   const page = await getOccurrencesPage(currentUser, filters);
   return page.content;
 };
+
+/**
+ * 🔹 Criação de ocorrência
+ */
+export async function createOccurrence(data: CreateOccurrenceDTO) {
+  const res = await apiClient.post("/api/ocorrencias", data);
+  return res.data;
+}

@@ -89,6 +89,9 @@ const withPWAFinal = withPWA({
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  images: {
+    domains: ["unrhmvzxjpkibttjigom.supabase.co"],
+  },
   async rewrites() {
     if (process.env.NODE_ENV === "development") {
       return [

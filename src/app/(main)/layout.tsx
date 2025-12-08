@@ -7,25 +7,38 @@ import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading } = useAuth(); // loading adicionado
   const router = useRouter();
   const [defaultOpen, setDefaultOpen] = useState(true);
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!loading && !isAuthenticated) {
       router.push("/login");
       return;
     }
 
-    const sidebarState = localStorage.getItem("sidebar_state");
-    setDefaultOpen(sidebarState ? sidebarState === "true" : true);
-  }, [isAuthenticated, router]);
+    if (!loading) {
+      const sidebarState = localStorage.getItem("sidebar_state");
+      setDefaultOpen(sidebarState ? sidebarState === "true" : true);
+    }
+  }, [loading, isAuthenticated, router]);
 
-  if (!isAuthenticated) {
+  // ✅ Enquanto carrega, não redireciona
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
         <span className="ml-2">Carregando...</span>
+      </div>
+    );
+  }
+
+  // ✅ Só mostra isso se loading terminou e não está autenticado
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+        <span className="ml-2">Redirecionando...</span>
       </div>
     );
   }

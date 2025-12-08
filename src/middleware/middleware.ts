@@ -108,5 +108,6 @@ export const config = {
     "/configuracao/:path*",
     "/users/:path*",
     "/auditoria/:path*",
+    "/ocorrencia/:path*",
   ],
 };

@@ -22,6 +22,15 @@ type AppMapaProps = {
 
 export default function AppMapa({ occurrences }: AppMapaProps) {
   const [mounted, setMounted] = useState(false);
+  console.log("Ocorrências recebidas:", occurrences.length);
+  console.table(
+    occurrences.map((o) => ({
+      id: o.id,
+      lat: o.latitude,
+      lng: o.longitude,
+      cidade: o.cidade,
+    }))
+  );
 
   // Garante que só renderiza no cliente
   useEffect(() => {
