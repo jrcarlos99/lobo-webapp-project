@@ -1,4 +1,3 @@
-import { apiGateway } from "@/lib/apiClientGateway";
 import { apiUsuarios } from "@/lib/apiClientUsuarios";
 import Cookies from "js-cookie";
 import type { AuthUser } from "@/types/auth";
@@ -10,7 +9,7 @@ export const login = async (
   email: string,
   senha: string
 ): Promise<AuthUser> => {
-  const res = await apiGateway.post("/auth/login", { email, senha });
+  const res = await apiUsuarios.post("/auth/login", { email, senha });
   const { token } = res.data;
 
   if (!token) throw new Error("Token não recebido");
@@ -48,7 +47,7 @@ export const me = async (): Promise<AuthUser | null> => {
 
 export const logout = async () => {
   try {
-    await apiGateway.post("/auth/logout").catch(() => {});
+    await apiUsuarios.post("/auth/logout").catch(() => {});
   } catch {}
 
   Cookies.remove("session");
