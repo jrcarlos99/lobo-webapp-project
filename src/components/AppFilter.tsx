@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  useState,
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useCallback,
-} from "react";
+import { useState, useEffect, useCallback } from "react";
 import type {
   OccurrenceFilters,
   OccurrenceStatus,
@@ -26,7 +20,7 @@ import {
 
 interface AppFilterProps {
   cidadesAutorizadas: string[];
-  onFilterChange: Dispatch<SetStateAction<OccurrenceFilters>>;
+  onFilterChange: (updates: Partial<OccurrenceFilters>) => void;
 }
 
 export const AppFilter = ({
@@ -37,7 +31,6 @@ export const AppFilter = ({
   const userRole = currentUser?.cargo;
   const canSeeAllRegions = can(userRole, "occurrence:all");
 
-  // ✅ Todos os selects começam controlados
   const [selectedPeriod, setSelectedPeriod] = useState<string>("all");
   const [selectedType, setSelectedType] = useState<string>("all");
   const [selectedCity, setSelectedCity] = useState<string>("all");
@@ -46,17 +39,11 @@ export const AppFilter = ({
 
   const applyFilters = useCallback(
     (updates: Partial<OccurrenceFilters>) => {
-      onFilterChange((prev) => ({
-        ...prev,
-        ...updates,
-        page: 0,
-      }));
+      onFilterChange(updates);
     },
     [onFilterChange]
   );
 
-  // ✅ Quando o usuário NÃO pode ver todas as regiões
-  // e tem cidades autorizadas, já define a cidade inicial
   useEffect(() => {
     if (!canSeeAllRegions && cidadesAutorizadas.length > 0) {
       setSelectedCity(cidadesAutorizadas[0]);
@@ -66,58 +53,38 @@ export const AppFilter = ({
 
   return (
     <div className="flex flex-col sm:flex-row gap-4 pt-4">
-      {/* Período */}
+      {/* STATUS */}
       <Select
-        value={selectedPeriod}
+        value={selectedStatus}
         onValueChange={(value) => {
-          setSelectedPeriod(value);
-
-          if (value === "all") {
-            applyFilters({ dataInicio: undefined, dataFim: undefined });
-            return;
-          }
-
-          const hoje = new Date();
-          let inicio = new Date();
-
-          if (value === "today") inicio = hoje;
-          if (value === "yesterday") inicio.setDate(hoje.getDate() - 1);
-          if (value === "last7days") inicio.setDate(hoje.getDate() - 7);
-          if (value === "last30days") inicio.setDate(hoje.getDate() - 30);
-          if (value === "lastmonth") {
-            inicio = new Date(hoje.getFullYear(), hoje.getMonth() - 1, 1);
-            hoje.setDate(0);
-          }
+          setSelectedStatus(value);
 
           applyFilters({
-            dataInicio: inicio.toISOString().split("T")[0],
-            dataFim: hoje.toISOString().split("T")[0],
+            status: value !== "all" ? (value as OccurrenceStatus) : undefined,
           });
         }}
       >
         <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Período" />
+          <SelectValue placeholder="Status" />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">Todos</SelectItem>
-          <SelectItem value="today">Hoje</SelectItem>
-          <SelectItem value="yesterday">Ontem</SelectItem>
-          <SelectItem value="last7days">Últimos 7 dias</SelectItem>
-          <SelectItem value="last30days">Últimos 30 dias</SelectItem>
-          <SelectItem value="lastmonth">Mês passado</SelectItem>
+          <SelectItem value="PENDENTE">Pendente</SelectItem>
+          <SelectItem value="EM_ANDAMENTO">Em Andamento</SelectItem>
+          <SelectItem value="ABERTA">Aberta</SelectItem>
+          <SelectItem value="CANCELADO">Cancelado</SelectItem>
+          <SelectItem value="CONCLUIDO">Concluído</SelectItem>
         </SelectContent>
       </Select>
 
-      {/* Tipo */}
+      {/* TIPO */}
       <Select
         value={selectedType}
         onValueChange={(value) => {
           setSelectedType(value);
+
           applyFilters({
-            tipo:
-              value !== "all"
-                ? (value.toUpperCase() as OccurrenceType)
-                : undefined,
+            tipo: value !== "all" ? (value as OccurrenceType) : undefined,
           });
         }}
       >
@@ -136,12 +103,15 @@ export const AppFilter = ({
         </SelectContent>
       </Select>
 
-      {/* Cidade */}
+      {/* CIDADE */}
       <Select
         value={selectedCity}
         onValueChange={(value) => {
           setSelectedCity(value);
-          applyFilters({ cidade: value !== "all" ? value : undefined });
+
+          applyFilters({
+            cidade: value !== "all" ? value : undefined,
+          });
         }}
       >
         <SelectTrigger className="w-[180px]">
@@ -157,44 +127,13 @@ export const AppFilter = ({
         </SelectContent>
       </Select>
 
-      {/* Status */}
-      <Select
-        value={selectedStatus}
-        onValueChange={(value) => {
-          setSelectedStatus(value);
-          applyFilters({
-            status:
-              value !== "all"
-                ? (value as OccurrenceStatus)
-                : ([
-                    "EM_ANDAMENTO",
-                    "ABERTA",
-                    "CANCELADO",
-                    "PENDENTE",
-                    "CONCLUIDO",
-                  ] as OccurrenceStatus[]),
-          });
-        }}
-      >
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Status" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">Todos</SelectItem>
-          <SelectItem value="PENDENTE">Pendente</SelectItem>
-          <SelectItem value="EM_ANDAMENTO">Em Andamento</SelectItem>
-          <SelectItem value="ABERTA">Aberta</SelectItem>
-          <SelectItem value="CANCELADO">Cancelado</SelectItem>
-          <SelectItem value="CONCLUIDO">Concluído</SelectItem>
-        </SelectContent>
-      </Select>
-
-      {/* Região */}
+      {/* REGIÃO */}
       {canSeeAllRegions ? (
         <Select
           value={selectedRegion}
           onValueChange={(value) => {
             setSelectedRegion(value);
+
             applyFilters({
               regiao:
                 value !== "all"

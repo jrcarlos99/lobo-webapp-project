@@ -1,6 +1,6 @@
 export type AuthRole = "ADMIN" | "CHEFE" | "ANALISTA";
 
-export type Regiao = "RMR" | "AGRE" | "SERT" | "ZDMT";
+export type Regiao = "RMR" | "AGRE" | "SERT" | "ZDMT" | "";
 
 export type AuthUser = {
   id_usuario: string | number;

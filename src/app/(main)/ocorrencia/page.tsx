@@ -24,7 +24,7 @@ export default function OcorrenciaPage() {
   const [selected, setSelected] = useState<Occurrence | null>(null);
   const [open, setOpen] = useState(false);
 
-  // ✅ Inicializa filtros já com datas válidas
+  //  Inicializa filtros já com datas válidas
   const hoje = new Date().toISOString().split("T")[0];
   const seisMesesAtras = new Date();
   seisMesesAtras.setMonth(seisMesesAtras.getMonth() - 6);
@@ -38,7 +38,7 @@ export default function OcorrenciaPage() {
     dataFim: hoje,
   });
 
-  // ✅ Query só dispara quando currentUser existe
+  //  Query só dispara quando currentUser existe
   const { data: occurrencesPage, isLoading: isOccurrencesLoading } = useQuery({
     queryKey: ["ocorrencias", currentUser?.id_usuario, filtrosDeTela],
     queryFn: () => getOccurrencesPage(currentUser!, filtrosDeTela),
@@ -86,11 +86,11 @@ export default function OcorrenciaPage() {
       <div className="bg-white p-4 rounded-lg shadow-sm flex flex-col md:flex-col items-center gap-4 col-span-2">
         <AppFilter
           cidadesAutorizadas={currentUser?.cidadesAutorizadas || []}
-          onFilterChange={(newFilters) =>
+          onFilterChange={(updates) =>
             setFiltrosDeTela((prev) => ({
               ...prev,
-              ...newFilters,
-              page: 0, // ✅ reset de página ao mudar filtros
+              ...updates,
+              page: 0,
             }))
           }
         />
