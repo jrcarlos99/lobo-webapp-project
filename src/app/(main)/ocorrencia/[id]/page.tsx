@@ -4,9 +4,10 @@ import OcorrenciaClient from "./OcorrenciaClient";
 export default async function OcorrenciaPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const ocorrencia = await getOcorrenciaById(params.id);
+  const { id } = await params;
+  const ocorrencia = await getOcorrenciaById(id);
 
   return <OcorrenciaClient ocorrencia={ocorrencia} />;
 }
