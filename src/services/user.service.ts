@@ -1,11 +1,12 @@
-import { apiClient } from "@/lib/apiClient";
+import { apiUsuarios } from "@/lib/apiClientUsuarios";
+
 import { scopeFiltersFor } from "@/policies/scope";
 import type { AuthUser } from "@/types/auth";
 import type { QueryParams } from "@/types/query";
 
 export const userService = {
   async getCurrentUser(): Promise<AuthUser> {
-    const res = await apiClient.get("/usuarios/me");
+    const res = await apiUsuarios.get("/usuarios/me");
     const data = res.data;
     return {
       id_usuario: data.id,
@@ -46,6 +47,6 @@ export const getUsersFor = async (
     }
   });
 
-  const res = await apiClient.get<UserListItem[]>("/usuarios", { params });
+  const res = await apiUsuarios.get<UserListItem[]>("/usuarios", { params });
   return res.data;
 };

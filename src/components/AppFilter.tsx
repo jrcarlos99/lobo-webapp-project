@@ -37,11 +37,12 @@ export const AppFilter = ({
   const userRole = currentUser?.cargo;
   const canSeeAllRegions = can(userRole, "occurrence:all");
 
-  const [selectedPeriod, setSelectedPeriod] = useState<string>();
-  const [selectedType, setSelectedType] = useState<string>();
-  const [selectedCity, setSelectedCity] = useState<string>();
-  const [selectedStatus, setSelectedStatus] = useState<string>();
-  const [selectedRegion, setSelectedRegion] = useState<string>();
+  // ✅ Todos os selects começam controlados
+  const [selectedPeriod, setSelectedPeriod] = useState<string>("all");
+  const [selectedType, setSelectedType] = useState<string>("all");
+  const [selectedCity, setSelectedCity] = useState<string>("all");
+  const [selectedStatus, setSelectedStatus] = useState<string>("all");
+  const [selectedRegion, setSelectedRegion] = useState<string>("all");
 
   const applyFilters = useCallback(
     (updates: Partial<OccurrenceFilters>) => {
@@ -54,6 +55,8 @@ export const AppFilter = ({
     [onFilterChange]
   );
 
+  // ✅ Quando o usuário NÃO pode ver todas as regiões
+  // e tem cidades autorizadas, já define a cidade inicial
   useEffect(() => {
     if (!canSeeAllRegions && cidadesAutorizadas.length > 0) {
       setSelectedCity(cidadesAutorizadas[0]);

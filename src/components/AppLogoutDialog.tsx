@@ -9,7 +9,7 @@ import {
 import { Button } from "./ui/button";
 import { CircleAlert } from "lucide-react";
 
-import { useLogout } from "@/hooks/useAuth";
+import { useLogout } from "@/hooks/useLogout";
 
 interface LogoutModalProps {
   isOpen: boolean;

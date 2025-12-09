@@ -1,4 +1,5 @@
-import { apiClient } from "@/lib/apiClient";
+import { apiOcorrencias } from "@/lib/apiClientOcorrencias";
+
 import type { DashboardData } from "@/types/dashboard";
 
 export async function getDashboardData(
@@ -8,7 +9,7 @@ export async function getDashboardData(
   console.log("Chamando backend com: ", { dataInicio, dataFim });
 
   try {
-    const response = await apiClient.get("/api/ocorrencias/dashboard", {
+    const response = await apiOcorrencias.get("/api/ocorrencias/dashboard", {
       params: { dataInicio, dataFim },
     });
 

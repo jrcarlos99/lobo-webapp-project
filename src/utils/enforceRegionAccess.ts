@@ -11,8 +11,9 @@ export function enforceRegionAccess(
   if (can(user.cargo, "region:all")) {
     return filters;
   }
+
   return {
     ...filters,
-    regiao: user.regiaoAutorizada as OccurrenceFilters["regiao"],
+    regiao: user.regiaoAutorizada,
   };
 }

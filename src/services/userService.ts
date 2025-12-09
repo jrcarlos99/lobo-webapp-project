@@ -1,5 +1,6 @@
 import { AxiosResponse } from "axios";
-import apiClient from "@/lib/apiClient";
+import { apiUsuarios } from "@/lib/apiClientUsuarios";
+
 import { auditService } from "./audit.service";
 import type { AuthUser } from "@/types/auth";
 import type { User } from "@/types/user";
@@ -82,7 +83,7 @@ class UserService {
 
   // 🔹 Pega o usuário logado (via /usuarios/me)
   async getCurrentUser(): Promise<AuthUser> {
-    const res = await apiClient.get("/usuarios/me");
+    const res = await apiUsuarios.get("/usuarios/me");
     const data = res.data;
     return {
       id_usuario: data.id,
@@ -96,7 +97,7 @@ class UserService {
   // 🔹 Lista todos os usuários
   async getUsers(): Promise<ApiResponse<User[]>> {
     try {
-      const res: AxiosResponse<ApiUser[]> = await apiClient.get("/usuarios");
+      const res: AxiosResponse<ApiUser[]> = await apiUsuarios.get("/usuarios");
       const users = res.data.map((u) => this.mapApiUserToUser(u));
       return { success: true, data: users };
     } catch (err) {
@@ -107,7 +108,7 @@ class UserService {
   // 🔹 Cria usuário
   async createUser(userData: NewUserData): Promise<ApiResponse<User>> {
     try {
-      const res = await apiClient.post("/usuarios", userData);
+      const res = await apiUsuarios.post("/usuarios", userData);
       const created = this.mapApiUserToUser(res.data);
       auditService.record({
         userId: created.id,
@@ -127,7 +128,7 @@ class UserService {
     userData: Partial<NewUserData>
   ): Promise<ApiResponse<User>> {
     try {
-      const res = await apiClient.put(`/usuarios/${userId}`, userData);
+      const res = await apiUsuarios.put(`/usuarios/${userId}`, userData);
       const updated = this.mapApiUserToUser(res.data);
       auditService.record({
         userId,
@@ -144,7 +145,7 @@ class UserService {
   // 🔹 Deleta usuário
   async deleteUser(userId: string): Promise<ApiResponse<void>> {
     try {
-      await apiClient.delete(`/usuarios/${userId}`);
+      await apiUsuarios.delete(`/usuarios/${userId}`);
       auditService.record({
         userId,
         action: "Deletar Usuário",
