@@ -76,7 +76,7 @@ export const AppTable = ({
                   {occurrence.status}
                 </TableCell>
                 <TableCell className="text-center">
-                  {formatDate(occurrence.dataHoraAbertura)}
+                  {formatDate(occurrence.data_hora_abertura)}
                 </TableCell>
               </TableRow>
             ))
