@@ -14,6 +14,6 @@ export function enforceRegionAccess(
 
   return {
     ...filters,
-    regiao: user.regiaoAutorizada,
+    regiao: user.regiaoAutorizada || undefined,
   };
 }
