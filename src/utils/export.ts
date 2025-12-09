@@ -43,8 +43,11 @@ export function handleGenerateReport(
   // Cálculo do tempo médio de operação
   const tempoOperacaoMedio =
     ocorrencias.reduce((acc, o) => {
-      const inicio = new Date(o.dataHoraAbertura).getTime();
-      const fim = new Date(o.dataHoraAtualizacao).getTime();
+      const inicio = new Date(o.data_hora_abertura).getTime();
+      const fim = o.data_hora_atualizacao
+        ? new Date(o.data_hora_atualizacao).getTime()
+        : inicio;
+
       return acc + (fim - inicio) / 60000;
     }, 0) / (ocorrencias.length || 1);
 
@@ -67,7 +70,7 @@ export function handleGenerateReport(
       o.tipo,
       o.status,
       o.cidade,
-      new Date(o.dataHoraAbertura).toLocaleString("pt-BR"),
+      new Date(o.data_hora_abertura).toLocaleString("pt-BR"),
     ]),
     startY: 20,
     styles: { fontSize: 10 },
@@ -157,7 +160,7 @@ export function exportToCSV(occurrences: Occurrence[]) {
     o.cidade,
     o.regiao,
     o.status,
-    new Date(o.dataHoraAbertura).toLocaleDateString("pt-BR"),
+    new Date(o.data_hora_abertura).toLocaleDateString("pt-BR"),
   ]);
 
   const csvContent = [header, ...row].map((e) => e.join(",")).join("\n");
@@ -205,7 +208,7 @@ export async function exportToPDF(occurrences: Occurrence[]) {
     o.cidade,
     o.regiao,
     o.status,
-    new Date(o.dataHoraAbertura).toLocaleDateString("pt-BR"),
+    new Date(o.data_hora_abertura).toLocaleDateString("pt-BR"),
   ]);
   autoTable(doc, {
     head: [["ID", "Titulo", "Cidade", "Região", "Data", "Status"]],

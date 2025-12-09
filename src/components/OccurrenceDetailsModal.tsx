@@ -45,7 +45,7 @@ export function OccurrenceDetailsModal({
           </p>
           <p>
             <strong>Abertura:</strong>{" "}
-            {new Date(occurrence.dataHoraAbertura!).toLocaleString("pt-BR")}
+            {new Date(occurrence.data_hora_abertura!).toLocaleString("pt-BR")}
           </p>
 
           {occurrence.descricao && (
