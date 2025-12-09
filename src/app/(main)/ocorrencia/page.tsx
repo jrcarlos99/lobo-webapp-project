@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { getOccurrencesPage } from "@/services/ocorrencies.service";
@@ -83,85 +84,86 @@ export default function OcorrenciaPage() {
         </div>
       </div>
 
-      <div className="bg-white p-4 rounded-lg shadow-sm flex flex-col md:flex-col items-center gap-4 col-span-2">
-        <AppFilter
-          cidadesAutorizadas={currentUser?.cidadesAutorizadas || []}
-          onFilterChange={(updates) =>
-            setFiltrosDeTela((prev) => ({
-              ...prev,
-              ...updates,
-              page: 0,
-            }))
-          }
-        />
-      </div>
+      <div className="col-span-2">
+        <div className="w-full bg-gray-50 p-4 rounded-lg shadow-md mb-4">
+          <AppFilter
+            cidadesAutorizadas={currentUser?.cidadesAutorizadas || []}
+            onFilterChange={(updates) =>
+              setFiltrosDeTela((prev) => ({
+                ...prev,
+                ...updates,
+                page: 0,
+              }))
+            }
+          />
+        </div>
 
-      <div className="bg-primary-foreground p-4 rounded-lg col-span-2">
-        {isLoading ? (
-          <div className="text-center text-gray-500">Carregando...</div>
-        ) : (
-          <>
-            <AppTable
-              data={occurrences}
-              page={currentPage}
-              size={filtrosDeTela.size}
-              totalElements={totalElements}
-              onRowClick={(occurrence) => {
-                setSelected(occurrence);
-                setOpen(true);
-              }}
-            />
-            {/* Paginação */}
-            <div className="flex justify-center mt-4">
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        if (currentPage > 0) {
-                          setFiltrosDeTela((prev) => ({
-                            ...prev,
-                            page: currentPage - 1,
-                          }));
-                        }
-                      }}
-                    />
-                  </PaginationItem>
+        <div className="bg-primary-foreground p-4 rounded-lg">
+          {isLoading ? (
+            <div className="text-center text-gray-500">Carregando...</div>
+          ) : (
+            <>
+              <AppTable
+                data={occurrences}
+                page={currentPage}
+                size={filtrosDeTela.size}
+                totalElements={totalElements}
+                onRowClick={(occurrence) => {
+                  setSelected(occurrence);
+                  setOpen(true);
+                }}
+              />
+              <div className="flex justify-center mt-4">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (currentPage > 0) {
+                            setFiltrosDeTela((prev) => ({
+                              ...prev,
+                              page: currentPage - 1,
+                            }));
+                          }
+                        }}
+                      />
+                    </PaginationItem>
 
-                  <PaginationItem>
-                    <span className="px-4 py-2 text-sm">
-                      Página {currentPage + 1} de {totalPages} — {totalElements}{" "}
-                      registros
-                    </span>
-                  </PaginationItem>
+                    <PaginationItem>
+                      <span className="px-4 py-2 text-sm">
+                        Página {currentPage + 1} de {totalPages} —{" "}
+                        {totalElements} registros
+                      </span>
+                    </PaginationItem>
 
-                  <PaginationItem>
-                    <PaginationNext
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        if (currentPage < totalPages - 1) {
-                          setFiltrosDeTela((prev) => ({
-                            ...prev,
-                            page: currentPage + 1,
-                          }));
-                        }
-                      }}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-            </div>
-          </>
-        )}
+                    <PaginationItem>
+                      <PaginationNext
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (currentPage < totalPages - 1) {
+                            setFiltrosDeTela((prev) => ({
+                              ...prev,
+                              page: currentPage + 1,
+                            }));
+                          }
+                        }}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            </>
+          )}
 
-        <OccurrenceDetailsModal
-          occurrence={selected}
-          open={open}
-          onOpenChange={setOpen}
-        />
+          <OccurrenceDetailsModal
+            occurrence={selected}
+            open={open}
+            onOpenChange={setOpen}
+          />
+        </div>
       </div>
     </div>
   );
