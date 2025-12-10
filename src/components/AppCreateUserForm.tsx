@@ -71,8 +71,9 @@ export function CreateUserForm() {
         <SelectTrigger>Selecione a região</SelectTrigger>
         <SelectContent>
           <SelectItem value="RMR">RMR</SelectItem>
-          <SelectItem value="SERTAO">SERTÃO</SelectItem>
-          <SelectItem value="AGRESTE">AGRESTE</SelectItem>
+          <SelectItem value="SERT">SERTÃO</SelectItem>
+          <SelectItem value="AGRE">AGRESTE</SelectItem>
+          <SelectItem value="ZDMT">ZONA DA MATA</SelectItem>
         </SelectContent>
       </Select>
       {errors.regiao && <p className="text-red-500">{errors.regiao.message}</p>}

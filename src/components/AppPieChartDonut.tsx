@@ -30,7 +30,6 @@ const regiaoKeyMap: Record<string, keyof typeof chartConfig> = {
   Sertão: "SERT",
   ZDMT: "ZDMT",
   "Zona da Mata": "ZDMT",
-  Agreste: "AGRE",
 };
 
 type Props = {

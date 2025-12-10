@@ -1,15 +1,22 @@
-# L.O.B.O - Sistema de Gestão de Ocorrências
+# LOBO Webapp — Sistema de Gestão de Ocorrências
+
+L.O.B.O é uma aplicação web moderna para gestão e monitoramento de ocorrências, com rotas protegidas, mapas, gráficos e PWA.
+
+![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js) ![React](https://img.shields.io/badge/React-18-61DAFB?logo=react) ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript) ![React_Query](https://img.shields.io/badge/TanStack_Query-5-FF4154?logo=reactquery) ![Axios](https://img.shields.io/badge/Axios-1.12.2-5A29E4?logo=axios) ![Leaflet](https://img.shields.io/badge/Leaflet-1.9.4-199900?logo=leaflet) ![Recharts](https://img.shields.io/badge/Recharts-2.15.4-764ABC) ![Tailwind](https://img.shields.io/badge/TailwindCSS-4-38B2AC?logo=tailwindcss) ![PWA](https://img.shields.io/badge/PWA-Enabled-5A0FC8?logo=pwa)
 
 ## 📋 Sobre o Projeto
 
-L.O.B.O é uma aplicação web moderna para gestão e monitoramento de ocorrências, desenvolvida com Next.js 13+. O sistema permite o registro, acompanhamento e análise de ocorrências em diferentes regiões, com suporte a múltiplos níveis de acesso e visualização de dados em tempo real.
+O sistema permite o registro, acompanhamento e análise de ocorrências em diferentes regiões, com suporte a múltiplos níveis de acesso, filtros avançados e visualização de dados em tempo real.
 
 ## 🚀 Tecnologias
 
-- [Next.js 13+](https://nextjs.org/)
-- [React](https://reactjs.org/)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Tailwind CSS](https://tailwindcss.com/)
+- Next.js 15 (App Router)
+- React 18 + TypeScript 5
+- Tailwind CSS 4
+- TanStack React Query 5
+- Axios
+- Leaflet + React-Leaflet
+- Recharts
 - PWA (Progressive Web App)
 
 ## ✨ Funcionalidades
@@ -24,7 +31,7 @@ L.O.B.O é uma aplicação web moderna para gestão e monitoramento de ocorrênc
 
 ## 🛠️ Instalação
 
-```bash
+```pwsh
 # Clone o repositório
 git clone https://github.com/jrcarlos99/lobo-webapp-project.git
 
@@ -33,20 +40,23 @@ cd lobo-webapp-project
 
 # Instale as dependências
 npm install
+```
 
-# Configure as variáveis de ambiente
-cp .env.example .env.local
+Crie `.env.local` (se necessário) com a URL do backend:
+
+```
+NEXT_PUBLIC_API_URL=https://api-gateway-60vv.onrender.com
 ```
 
 ## 🚀 Executando o Projeto
 
-```bash
+```pwsh
 # Desenvolvimento
 npm run dev
 
 # Produção
 npm run build
-npm start
+npm run start
 ```
 
 A aplicação estará disponível em: `http://localhost:3000`
@@ -55,12 +65,14 @@ A aplicação estará disponível em: `http://localhost:3000`
 
 ```
 src/
-├── app/                    # Rotas e layouts (Next.js App Router)
-├── components/            # Componentes React reutilizáveis
-├── hooks/                # Hooks personalizados
-├── lib/                  # Utilitários e configurações
-├── services/            # Serviços de API
-└── types/               # Definições de tipos TypeScript
+├── app/                 # Rotas e layouts (App Router)
+├── components/          # UI e componentes de features
+├── hooks/               # Autenticação, dashboard, uploads
+├── lib/                 # Cliente axios, utilitários
+├── services/            # Auth, usuários, ocorrências, dashboard, auditoria
+├── policies/            # Permissões e escopos
+├── utils/               # Helpers (região, export, datas)
+└── types/               # Tipos TypeScript das entidades
 ```
 
 ## 🔐 Permissões e Roles
@@ -73,11 +85,8 @@ O sistema possui diferentes níveis de acesso:
 
 ## 📱 PWA
 
-A aplicação é uma Progressive Web App (PWA), permitindo:
-
 - Instalação no dispositivo
 - Funcionamento offline
-- Notificações push
 - Atualização automática
 
 ## 🤝 Contribuindo
@@ -88,9 +97,22 @@ A aplicação é uma Progressive Web App (PWA), permitindo:
 4. Push para a branch (`git push origin feature/AmazingFeature`)
 5. Abra um Pull Request
 
+## 📝 Mudanças Recentes (Dez/2025)
+
+- Nova página de criação de ocorrência: `src/app/(main)/ocorrencia/new/page.tsx`.
+- Botão "Criar Ocorrência" na listagem: `src/app/(main)/ocorrencia/page.tsx`.
+- Serviço `createOccurrence(data)` em `src/services/ocorrencies.service.ts` (POST `/api/ocorrencias`).
+- Ajuste Next 15: páginas com `params` usam `Promise<...>` (ex.: `src/app/(main)/ocorrencia/[id]/page.tsx`).
+- Autenticação: normalização e persistência de usuário e token em `auth.services.ts`.
+
+## 🔐 Permissões e Roles
+
+- Middleware valida cookie `session` e permissões via `policies/permissions.ts`.
+- `RoleGuard` e componentes controlam acesso/visibilidade por cargo.
+
 ## 📝 Licença
 
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+Uso interno do projeto LOBO.
 
 ## 👨‍💻 Autor
 

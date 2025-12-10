@@ -218,9 +218,9 @@ export function EditUserDialog({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="RMR">RMR</SelectItem>
-                  <SelectItem value="AGRESTE">Agreste</SelectItem>
-                  <SelectItem value="SERTAO">Sertão</SelectItem>
-                  <SelectItem value="ZONA_MATA">Zona da Mata</SelectItem>
+                  <SelectItem value="AGRE">Agreste</SelectItem>
+                  <SelectItem value="SERT">Sertão</SelectItem>
+                  <SelectItem value="ZDMT">Zona da Mata</SelectItem>
                 </SelectContent>
               </Select>
               {errors.region && (

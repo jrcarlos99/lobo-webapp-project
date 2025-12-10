@@ -43,7 +43,7 @@ export default function DetalhesOcorrenciaForm({
             <option value="">Selecione...</option>
             <option value="RMR">RMR</option>
             <option value="SERTAO">Sertão</option>
-            <option value="AGRESTE">Agreste</option>
+            <option value="AGRE">Agreste</option>
           </select>
           {errors.regiao && (
             <p className="text-sm text-red-500">
